@@ -13,16 +13,26 @@ import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.NoteRepository;
 import com.bridgelabz.fundoonotes.service.NoteService;
+import com.bridgelabz.fundoonotes.utility.Utility;
 
 @Service
 public class NoteImplementation implements NoteService
 {
-	@Autowired
 	NoteRepository repository;	
+	Utility utility;
+	
+	@Autowired
+	public NoteImplementation(NoteRepository repository,Utility utility) 
+	{
+		this.repository=repository;
+		this.utility=utility;
+	}
 	
 	
-	public void saveNewNote(NoteDTO notedto)
+	public void saveNewNote(NoteDTO notedto,String jwt)
 	{	
+		if(utility.validateToken(jwt))
+		{
 		int notesid;
 		try
 		{
@@ -32,27 +42,20 @@ public class NoteImplementation implements NoteService
 		{
 			notesid=1;
 		}
+		UserInfo user=repository.findByUsername(utility.getUsernameFromToken(jwt));
 		List<Label> labels=getLabels(notedto);
 		List<Images> images=getImages(notedto,notesid); 
-		List<UserInfo> collaborators=getCollaborators(notedto);
-		
-		repository.saveNote(notedto.getTitle(),notedto.getTakeanote(),notedto.getReminder(),labels ,images,new ArrayList<UserInfo>());
-	
-		
-	}
-	
-	public List<UserInfo> getCollaborators(NoteDTO notedto)
-	{
-		try {
-		List<UserInfo> collaborators=notedto.getCollabarotor().stream().map(s->repository.getCollaborators(s)).collect(Collectors.toList());
-		return collaborators;	
+		Notes notes=new Notes(notedto.getTitle(),notedto.getTakeanote(),notedto.getReminder(),notedto.getColor(),labels,images);
+		repository.save(notes);
 		}
-		catch (Exception e) 
+		else
 		{
-			return new ArrayList<UserInfo>();
+			
 		}
 	
+		
 	}
+	
 	
 	public List<Images> getImages(NoteDTO notedto,int notesid)
 	{
@@ -78,4 +81,7 @@ public class NoteImplementation implements NoteService
 		
 		return labels;
 	}
+
+
+	
 }

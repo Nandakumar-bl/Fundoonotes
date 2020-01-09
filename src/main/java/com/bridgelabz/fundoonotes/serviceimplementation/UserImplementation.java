@@ -28,7 +28,7 @@ import com.bridgelabz.fundoonotes.utility.Utility;
 
 
 @Service
-public class UserImplementation implements UserService
+public class UserImplementation implements UserService,UserDetailsService
 {
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
@@ -41,7 +41,8 @@ public class UserImplementation implements UserService
 	@Autowired
 	private JavaMailSender javaMailSender;
 	
-	Utility utility=new Utility();
+	@Autowired
+	Utility utility;
 	
 	
 	public boolean Register(UserDTO userDto)
@@ -50,7 +51,7 @@ public class UserImplementation implements UserService
 		  {  
 			    UserInfo user=mapper.map(userDto,UserInfo.class);
 	        	repository.SaveUser(user.getId(), user.getUsername(),user.getFirstname(),user.getLastname(),user.getEmail(), bcrypt.encode(user.getPassword()));
-	        	// kafkaTemplate.send("verification",user.getEmail());
+	        //	kafkaTemplate.send("verification",user.getEmail());
 	        	return true;
 		  }
 		  catch(Exception e)
@@ -62,10 +63,13 @@ public class UserImplementation implements UserService
 	
 	/*
 	 * @KafkaListener(topics = "verification", groupId = "group-id") public void
-	 * consume(String message) { MailDetails(message); kafkaTemplate.flush();
+	 * consume(String message) {
+	 * 
+	 * utility.MailDetails(message); kafkaTemplate.flush();
 	 * 
 	 * }
 	 */
+	 
 	
 	
 	public ResponseEntity<Response> login(LoginDTO logindto)
@@ -101,9 +105,12 @@ public class UserImplementation implements UserService
 		}
 	}
 	
+	
 	/*
 	 * @KafkaListener(topics = "Email_send", groupId = "group-id") public void
-	 * consume(String message) { utility.sendEMail(message); kafkaTemplate.flush(); }
+	 * consume2(String message) { utility.sendEMail(message); kafkaTemplate.flush();
+	 * 
+	 * }
 	 */
 	
 	
@@ -111,7 +118,7 @@ public class UserImplementation implements UserService
 	{
 		if(utility.validateToken(jwt))
 		{
-		repository.changepassword(password,jwt);
+		repository.changepassword(bcrypt.encode(password),utility.getUsernameFromToken(jwt));
         return null;
 		}
 		else
@@ -121,11 +128,21 @@ public class UserImplementation implements UserService
 	}
 
 	@Override
-	public void forgotPassword(ForgotDTO forgotdto) {
+	public void forgotPassword(ForgotDTO forgotdto)
+	{
 	
-		kafkaTemplate.send("Email_send",forgotdto.getEmail());
+		//kafkaTemplate.send("Email_send",forgotdto.getEmail());
 		
 	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		UserInfo user=repository.findByUsername(username);
+		return new User(user.getUsername(),user.getPassword(), new ArrayList());
+		
+	}
+	
+	
 	
 	
 

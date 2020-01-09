@@ -19,6 +19,9 @@ import com.bridgelabz.fundoonotes.model.UserInfo;
 public interface NoteRepository extends JpaRepository<Notes,Integer> 
 {
 	
+	@Query("from UserInfo where username=?1")
+	UserInfo findByUsername(String username);
+	
 	@Query("from Label where label=?1")
 	Label findLabelByName(String label);
 	
@@ -38,17 +41,20 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Modifying
 	Integer createImages(String link,int notesid);
 	
-	@Query(value = "select * from drawing where notes_id=:notesid",nativeQuery = true)
+	@Query(value = "select * from images where notes_id=:notesid",nativeQuery = true)
 	List<Images> getImages(Integer notesid);
 	
 	@Query(value="select * from user_info where email=:email",nativeQuery = true)
 	UserInfo getCollaborators(String email);
 	
 	
-	
-	@Query(value="insert into notes(title,takeanote,reminder,label,images,collaborator) values(:title,:takeanote,:reminder,:labels,:images,:collaborator)",nativeQuery = true)
-	@Modifying
-	Integer saveNote(String title,String takeanote,String reminder,List<Label> labels,List<Images> images,List<UserInfo> collaborator);
-
-	
+	/*
+	 * @Query(
+	 * value="insert into notes(title,takeanote,reminder,label,images,collaborator) values(:title,:takeanote,:reminder,:labels,:images,:collaborator)"
+	 * ,nativeQuery = true)
+	 * 
+	 * @Modifying Integer saveNote(String title,String takeanote,String
+	 * reminder,List<Label> labels,List<Images> images,List<UserInfo> collaborator);
+	 * 
+	 */
 }

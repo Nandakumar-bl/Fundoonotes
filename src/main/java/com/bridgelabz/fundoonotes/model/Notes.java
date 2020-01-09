@@ -27,14 +27,27 @@ public class Notes {
 	private boolean ispinned;
 	private String reminder;
     private String color;
-	@ManyToMany(mappedBy = "notes")
+	@ManyToMany
 	private List<Label> label;
 	@OneToMany(mappedBy = "notes")
 	private List<Images> images;
-	@ManyToMany(mappedBy = "notes")
-	private List<UserInfo> collaborator;
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date CreatedTime;
+	@OneToOne
+	private UserInfo userinfo;
+	
+	
+
+	public Notes(String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images) 
+	{
+		this.title = title;
+		this.takeanote = takeanote;
+		this.reminder = reminder;
+		this.color = color;
+		this.label = label;
+		this.images = images;
+		
+	}
 
 	public int getId() {
 		return id;
@@ -121,28 +134,38 @@ public class Notes {
 		this.images = images;
 	}
 
-	
-
-
-
-	public List<UserInfo> getCollaborator() {
-		return collaborator;
+	public String getColor() {
+		return color;
 	}
 
-	public void setCollaborator(List<UserInfo> collaborator) {
-		this.collaborator = collaborator;
+	public void setColor(String color) {
+		this.color = color;
+	}
+
+	public UserInfo getUserinfo() {
+		return userinfo;
+	}
+
+	public void setUserinfo(UserInfo userinfo) {
+		this.userinfo = userinfo;
 	}
 
 	@Override
 	public String toString() {
 		return "Notes [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
 				+ ", istrash=" + istrash + ", ispinned=" + ispinned + ", reminder=" + reminder + ", color=" + color
-				+ ", label=" + label + ", drawing=" + ", images=" + images + ", collaborator=" + collaborator
-				+ ", CreatedTime=" + CreatedTime + "]";
+				+ ", label=" + label + ", images=" + images + ", CreatedTime=" + CreatedTime + ", userinfo=" + userinfo
+				+ "]";
+	}
+
+	
+
+
+
+	
+	
 	}
 
 
 	
-	
 
-}

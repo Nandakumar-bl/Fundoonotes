@@ -23,6 +23,6 @@ public class LoginDTO {
 
 	@Override
 	public String toString() {
-		return "LoginDTO [username=" + username + ", password=" + password + "]";
+		return username;
 	}
 }

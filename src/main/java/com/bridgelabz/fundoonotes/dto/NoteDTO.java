@@ -11,9 +11,7 @@ public class NoteDTO
 	private String color; 
 	private String reminder;
 	private List<String> label;
-	private List<String> drawing;
 	private List<String> images;
-	private List<String> collabarotor;
 	
 	
 	public String getTitle() {
@@ -59,29 +57,18 @@ public class NoteDTO
 	public void setLabel(List<String> label) {
 		this.label = label;
 	}
-	public List<String> getDrawing() {
-		return drawing;
-	}
-	public void setDrawing(List<String> drawing) {
-		this.drawing = drawing;
-	}
+	
 	public List<String> getImages() {
 		return images;
 	}
 	public void setImages(List<String> images) {
 		this.images = images;
 	}
-	public List<String> getCollabarotor() {
-		return collabarotor;
-	}
-	public void setCollabarotor(List<String> collabarotor) {
-		this.collabarotor = collabarotor;
-	}
+	
 	@Override
 	public String toString() {
 		return "NoteDTO [title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve + ", ispinned="
-				+ ispinned + ", color=" + color + ", label=" + label + ", drawing=" + drawing + ", images=" + images
-				+ ", collabarotor=" + collabarotor + "]";
+				+ ispinned + ", color=" + color + ", label=" + label + ",images=" + images + "]";
 	}
 	
 	

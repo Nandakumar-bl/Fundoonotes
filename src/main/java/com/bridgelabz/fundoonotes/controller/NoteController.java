@@ -3,6 +3,7 @@ package com.bridgelabz.fundoonotes.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.service.NoteService;
@@ -13,9 +14,9 @@ public class NoteController
 	@Autowired
 	NoteService noteservice;
 	@PostMapping("/newnote")
-	public void newNote(@RequestBody NoteDTO notedto)
+	public void newNote(@RequestBody NoteDTO notedto,@RequestHeader("jwt") String jwt)
 	{
-		noteservice.saveNewNote(notedto);
+		noteservice.saveNewNote(notedto,jwt);
 		
 		
 	}

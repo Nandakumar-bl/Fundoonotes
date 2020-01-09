@@ -15,8 +15,6 @@ public class UserDTO
 	@NotNull(message = "email cannot be empty")
 	@Pattern(regexp = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$",message = "give an valid email")
 	private String email;
-	@NotNull
-	private boolean isemailverified;
 	@NotNull(message = "password cannot be empty")
 	@Size(min = 8,max = 20)
 	private String password;
@@ -61,6 +59,11 @@ public class UserDTO
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	@Override
+	public String toString() {
+		return "UserDTO [username=" + username + ", Firstname=" + Firstname + ", Lastname=" + Lastname + ", email="
+				+ email + ", password=" + password + ", passwordagain=" + passwordagain + "]";
 	}
 	
 	

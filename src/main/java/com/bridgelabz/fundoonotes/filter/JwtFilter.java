@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.filter;
 
-import java.io.IOException;
+import java.io.IOException;      
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -12,17 +12,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import com.bridgelabz.fundoonotes.serviceimplementation.LoginImplementation;
+import com.bridgelabz.fundoonotes.serviceimplementation.UserImplementation;
 import com.bridgelabz.fundoonotes.utility.Utility;
-import net.bytebuddy.asm.MemberSubstitution.Substitution.Chain;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 	
-	Utility utility=new Utility();
+	@Autowired
+	Utility utility;
 
 	@Autowired
-	LoginImplementation user;
+	UserImplementation userimp;
 	
 
 	@Override
@@ -40,7 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) 
 		{
-			UserDetails userdetails=user.loadUserByUsername(username);
+			UserDetails userdetails=userimp.loadUserByUsername(username);
 			if(utility.validateToken(jwt,userdetails))
 			{
 				UsernamePasswordAuthenticationToken upat=new UsernamePasswordAuthenticationToken(

@@ -27,8 +27,14 @@ public class Utility {
 	private String SECRET_KEY = "SECRET";
 	@Autowired
 	private JavaMailSender javaMailSender;
+	private final UserRepository userRepository;
+	
 	@Autowired
-	UserRepository repository;
+	public Utility(UserRepository userRepository)
+	{
+		this.userRepository=userRepository;
+	}
+	
 
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
@@ -87,7 +93,7 @@ public class Utility {
 	
 	public void sendEMail(String email)
 	{
-		UserInfo user=repository.findByEmail(email);
+		UserInfo user=userRepository.findByEmail(email);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
 		String url="http://localhost:8082/user/resetpassword?jwt="+jwt;
 		sendMail(email,"changing password",url);
@@ -95,20 +101,23 @@ public class Utility {
 	
 	public boolean checkverified(String username)
 	{
-		UserInfo user=repository.findByUsername(username);
+		UserInfo user=userRepository.findByUsername(username);
 		return user.getIsemailverified();
 	}
 
 	public boolean checkUser(String username)
 	{
-		return repository.findByUsername(username)!=null;
+		return userRepository.findByUsername(username)!=null;
 	}
    
 	public void MailDetails(String email)
 	{
-		UserInfo user=repository.findByEmail(email);
+		System.out.println(email);
+		System.out.println(userRepository);
+		UserInfo user=userRepository.findByEmail(email);
+		System.out.println(user);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
-		String url="http://localhost:8083/checkemail?jwt="+jwt;
+		String url="http://localhost:8083/user/verifyemail?jwt="+jwt;
 		sendMail(email,"verifying email",url);
 	}
 	public boolean checkJWT(String token)
@@ -117,7 +126,7 @@ public class Utility {
 	}
 	public boolean checkmail(String email)
 	{
-		return repository.findByEmail(email)!=null;
+		return userRepository.findByEmail(email)!=null;
 	}
 
 	

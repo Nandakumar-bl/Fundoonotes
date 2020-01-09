@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -42,8 +44,10 @@ public class UserInfo
 	@NotNull
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date createddate;
-	@ManyToMany
+	@OneToMany(mappedBy = "userinfo")
 	private List<Notes> notes;
+	@OneToMany(mappedBy = "userinfo")
+	private List<Label> labels;
 	
 	
 	public Date getCreateddate() {
@@ -94,6 +98,20 @@ public class UserInfo
 	}
 	public void setIsemailverified(boolean isemailverified) {
 		this.isemailverified = isemailverified;
+	}
+	
+	
+	public List<Notes> getNotes() {
+		return notes;
+	}
+	public void setNotes(List<Notes> notes) {
+		this.notes = notes;
+	}
+	public List<Label> getLabels() {
+		return labels;
+	}
+	public void setLabels(List<Label> labels) {
+		this.labels = labels;
 	}
 	@Override
 	public String toString() {

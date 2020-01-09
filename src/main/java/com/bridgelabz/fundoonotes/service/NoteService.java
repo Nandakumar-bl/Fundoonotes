@@ -4,6 +4,6 @@ import com.bridgelabz.fundoonotes.dto.NoteDTO;
 
 public interface NoteService {
 	
-	public void saveNewNote(NoteDTO notedto);
+	public void saveNewNote(NoteDTO notedto,String jwt);
 
 }

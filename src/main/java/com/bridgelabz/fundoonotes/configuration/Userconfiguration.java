@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.configuration;
 
-import org.modelmapper.ModelMapper;
+import org.modelmapper.ModelMapper;    
 import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.boot.autoconfigure.security.servlet.WebSecurityEnablerConfiguration;
@@ -20,11 +20,20 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.bridgelabz.fundoonotes.filter.JwtFilter;
-import com.bridgelabz.fundoonotes.serviceimplementation.LoginImplementation;
 import com.bridgelabz.fundoonotes.utility.Utility;
+import com.google.common.base.Predicate;
+
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Contact;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 
 @EnableWebSecurity
 @Configuration
+@EnableSwagger2
 public class Userconfiguration extends WebSecurityConfigurerAdapter
 {
 	@Autowired
@@ -34,9 +43,9 @@ public class Userconfiguration extends WebSecurityConfigurerAdapter
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/*")
+			.antMatchers("/**")
 			.permitAll()
-			.anyRequest().authenticated()
+			.anyRequest().permitAll()//.authenticated()
 			.and().addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		
@@ -54,5 +63,12 @@ public class Userconfiguration extends WebSecurityConfigurerAdapter
 		return new BCryptPasswordEncoder();
 	}
 	
+	@Bean
+	   public Docket productApi() {
+	      return new Docket(DocumentationType.SWAGGER_2).select()
+	         .apis(RequestHandlerSelectors.basePackage("com.bridgelabz.fundoonotes.controller")).build();
+	   }
+
+	 
 	
 }
