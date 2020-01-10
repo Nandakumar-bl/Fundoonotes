@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Pattern;
@@ -35,10 +36,11 @@ public class Notes {
 	private Date CreatedTime;
 	@OneToOne
 	private UserInfo userinfo;
+
 	
 	
 
-	public Notes(String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images) 
+	public Notes(String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images,UserInfo userinfo) 
 	{
 		this.title = title;
 		this.takeanote = takeanote;
@@ -46,6 +48,7 @@ public class Notes {
 		this.color = color;
 		this.label = label;
 		this.images = images;
+		this.userinfo=userinfo;
 		
 	}
 
@@ -142,20 +145,12 @@ public class Notes {
 		this.color = color;
 	}
 
-	public UserInfo getUserinfo() {
-		return userinfo;
-	}
-
-	public void setUserinfo(UserInfo userinfo) {
-		this.userinfo = userinfo;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "Notes [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
 				+ ", istrash=" + istrash + ", ispinned=" + ispinned + ", reminder=" + reminder + ", color=" + color
-				+ ", label=" + label + ", images=" + images + ", CreatedTime=" + CreatedTime + ", userinfo=" + userinfo
-				+ "]";
+				+ ", label=" + label + ", images=" + images + ", CreatedTime=" + CreatedTime + ", userinfo=S]";
 	}
 
 	

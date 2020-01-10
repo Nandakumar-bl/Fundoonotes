@@ -47,14 +47,9 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query(value="select * from user_info where email=:email",nativeQuery = true)
 	UserInfo getCollaborators(String email);
 	
+	@Query("delete from Notes where id=?1")
+	@Modifying
+	Integer deleteByNoteid(int id);
 	
-	/*
-	 * @Query(
-	 * value="insert into notes(title,takeanote,reminder,label,images,collaborator) values(:title,:takeanote,:reminder,:labels,:images,:collaborator)"
-	 * ,nativeQuery = true)
-	 * 
-	 * @Modifying Integer saveNote(String title,String takeanote,String
-	 * reminder,List<Label> labels,List<Images> images,List<UserInfo> collaborator);
-	 * 
-	 */
+
 }

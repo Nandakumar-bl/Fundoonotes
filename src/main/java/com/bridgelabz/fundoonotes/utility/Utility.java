@@ -75,6 +75,8 @@ public class Utility {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
+		System.out.println(username);
+		System.out.println(userDetails.getUsername());
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 	public Boolean validateToken(String token) {
@@ -95,7 +97,7 @@ public class Utility {
 	{
 		UserInfo user=userRepository.findByEmail(email);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
-		String url="http://localhost:8082/user/resetpassword?jwt="+jwt;
+		String url="http://localhost:8082/user/resetpassword/"+jwt;
 		sendMail(email,"changing password",url);
 	}
 	
@@ -117,7 +119,7 @@ public class Utility {
 		UserInfo user=userRepository.findByEmail(email);
 		System.out.println(user);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
-		String url="http://localhost:8083/user/verifyemail?jwt="+jwt;
+		String url="http://localhost:8083/user/verifyemail/"+jwt;
 		sendMail(email,"verifying email",url);
 	}
 	public boolean checkJWT(String token)

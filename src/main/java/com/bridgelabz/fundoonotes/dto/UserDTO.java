@@ -4,6 +4,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+
 public class UserDTO 
 {
 	@NotNull(message = "username cannot be empty")
@@ -28,12 +32,16 @@ public class UserDTO
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	@JsonIgnore
+	@JsonProperty(value = "password")
 	public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
+	@JsonIgnore
+	@JsonProperty(value = "passwordagain")
 	public String getPasswordagain() {
 		return passwordagain;
 	}

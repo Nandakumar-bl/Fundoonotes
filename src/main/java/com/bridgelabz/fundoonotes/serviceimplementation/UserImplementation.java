@@ -1,8 +1,13 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.util.ArrayList; 
-import org.modelmapper.ModelMapper;  
+import java.util.ArrayList;   
+import org.modelmapper.ModelMapper;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,8 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.bridgelabz.fundoonotes.dto.ForgotDTO;
 import com.bridgelabz.fundoonotes.dto.LoginDTO;
 import com.bridgelabz.fundoonotes.dto.UserDTO;
+import com.bridgelabz.fundoonotes.exceptions.LoginException;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.UserRepository;
+import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.service.UserService;
 import com.bridgelabz.fundoonotes.utility.Utility;
@@ -40,18 +47,22 @@ public class UserImplementation implements UserService,UserDetailsService
 	BCryptPasswordEncoder bcrypt;
 	@Autowired
 	private JavaMailSender javaMailSender;
+	@Autowired
+	private AmqpTemplate rabbitTemplate;
 	
 	@Autowired
 	Utility utility;
 	
-	
+
 	public boolean Register(UserDTO userDto)
 	  {
+		
 		  try 
 		  {  
 			    UserInfo user=mapper.map(userDto,UserInfo.class);
 	        	repository.SaveUser(user.getId(), user.getUsername(),user.getFirstname(),user.getLastname(),user.getEmail(), bcrypt.encode(user.getPassword()));
-	        //	kafkaTemplate.send("verification",user.getEmail());
+	        	rabbitTemplate.convertAndSend("exchanger", "key",user.getEmail());
+	        	//	kafkaTemplate.send("verification",user.getEmail());
 	        	return true;
 		  }
 		  catch(Exception e)
@@ -60,6 +71,14 @@ public class UserImplementation implements UserService,UserDetailsService
 			  return false;
 		  }		 
 	  }
+	
+	
+	// @RabbitListener(queues ="myqueue")
+	 public void emailVerifier(String mail)
+	 {
+		 utility.MailDetails(mail);
+	 }
+	
 	
 	/*
 	 * @KafkaListener(topics = "verification", groupId = "group-id") public void
@@ -72,13 +91,13 @@ public class UserImplementation implements UserService,UserDetailsService
 	 
 	
 	
-	public ResponseEntity<Response> login(LoginDTO logindto)
+	public ResponseEntity<Response> login(LoginDTO logindto) throws LoginException
 	{
 		UserInfo user=repository.findByUsername(logindto.getUsername());
 		
 		if(!utility.checkUser(logindto.getUsername())) 
 		{
-			
+			throw new LoginException("register before Login");
 		}
 		
 		if(utility.checkverified(logindto.getUsername()))
@@ -89,20 +108,23 @@ public class UserImplementation implements UserService,UserDetailsService
 				return ResponseEntity.ok().body(new Response(200,"Token recieved",token));	
 			}
 			else
-				return ResponseEntity.badRequest().body(new Response(400,"Bad credentials","password or username is wrong"));
+				throw new LoginException("BadCredentials");
 		}		
 		else
 		{
-			 return ResponseEntity.badRequest().body(new Response(400,"Not  Verified","you are not verified"));
+			throw new LoginException("you not a verified User");
 		}
 	}
 	
-	public void verifyEmail(String jwt)
+	public ResponseEntity<Response> verifyEmail(String jwt) throws JWTTokenException
 	{
 		if(utility.validateToken(jwt))
 		{
 			repository.setVerifiedEmail(utility.getUsernameFromToken(jwt));
+			return null;
 		}
+		
+			throw new JWTTokenException("Not a valid token");
 	}
 	
 	
@@ -114,7 +136,9 @@ public class UserImplementation implements UserService,UserDetailsService
 	 */
 	
 	
-	public String resetPassword(String password,String jwt)
+	
+	
+	public String resetPassword(String password,String jwt) throws JWTTokenException
 	{
 		if(utility.validateToken(jwt))
 		{
@@ -123,7 +147,7 @@ public class UserImplementation implements UserService,UserDetailsService
 		}
 		else
 		{
-			return "Token Expired";
+			throw new JWTTokenException("Not a valid token");
 		}
 	}
 
@@ -132,7 +156,14 @@ public class UserImplementation implements UserService,UserDetailsService
 	{
 	
 		//kafkaTemplate.send("Email_send",forgotdto.getEmail());
+		rabbitTemplate.convertAndSend("exchanger", "key",forgotdto.getEmail());
 		
+	}
+	
+	//@RabbitListener
+	public void forgotPassTokenSender(String email)
+	{
+		utility.sendEMail(email);
 	}
 
 	@Override

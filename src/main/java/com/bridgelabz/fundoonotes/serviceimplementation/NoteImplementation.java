@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.model.Images;
@@ -12,6 +13,7 @@ import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.NoteRepository;
+import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.service.NoteService;
 import com.bridgelabz.fundoonotes.utility.Utility;
 
@@ -29,9 +31,11 @@ public class NoteImplementation implements NoteService
 	}
 	
 	
-	public void saveNewNote(NoteDTO notedto,String jwt)
+	public boolean saveNewNote(NoteDTO notedto,String jwt) throws JWTTokenException
 	{	
-		if(utility.validateToken(jwt))
+		
+		UserInfo user=repository.findByUsername(utility.getUsernameFromToken(jwt));
+		if(utility.validateToken(jwt) && user!=null)
 		{
 		int notesid;
 		try
@@ -42,15 +46,17 @@ public class NoteImplementation implements NoteService
 		{
 			notesid=1;
 		}
-		UserInfo user=repository.findByUsername(utility.getUsernameFromToken(jwt));
+		
+		
 		List<Label> labels=getLabels(notedto);
 		List<Images> images=getImages(notedto,notesid); 
-		Notes notes=new Notes(notedto.getTitle(),notedto.getTakeanote(),notedto.getReminder(),notedto.getColor(),labels,images);
+		Notes notes=new Notes(notedto.getTitle(),notedto.getTakeanote(),notedto.getReminder(),notedto.getColor(),labels,images,user);
 		repository.save(notes);
+		return true;
 		}
 		else
 		{
-			
+			throw new JWTTokenException("Your Token is Not valid");
 		}
 	
 		
@@ -80,6 +86,19 @@ public class NoteImplementation implements NoteService
 		List<Label> labels=notedto.getLabel().stream().map(s-> repository.findLabelByName(s)).collect(Collectors.toList());
 		
 		return labels;
+	}
+	
+	public void deleteNote(int id,String jwt) throws JWTTokenException
+	{
+		UserInfo user=repository.findByUsername(utility.getUsernameFromToken(jwt));
+		if(utility.validateToken(jwt) && user!=null)
+		{
+		repository.deleteByNoteid(id);
+		}
+		else
+		{
+			throw new JWTTokenException("Your Token is Not valid");
+		}
 	}
 
 

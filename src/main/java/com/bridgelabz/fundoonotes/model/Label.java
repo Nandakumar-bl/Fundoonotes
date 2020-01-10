@@ -20,6 +20,8 @@ public class Label {
 	@ManyToOne
 	private UserInfo userinfo;
 	
+	
+	
 	public int getId() {
 		return id;
 	}
