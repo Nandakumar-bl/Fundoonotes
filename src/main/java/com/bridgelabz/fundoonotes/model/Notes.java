@@ -36,10 +36,22 @@ public class Notes {
 	private Date CreatedTime;
 	@OneToOne
 	private UserInfo userinfo;
-
 	
+	public Notes() {}
 	
 
+	public Notes(int id,String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images) 
+	{
+		this.id=id;
+		this.title = title;
+		this.takeanote = takeanote;
+		this.reminder = reminder;
+		this.color = color;
+		this.label = label;
+		this.images = images;
+		
+	}
+	
 	public Notes(String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images,UserInfo userinfo) 
 	{
 		this.title = title;
@@ -49,7 +61,6 @@ public class Notes {
 		this.label = label;
 		this.images = images;
 		this.userinfo=userinfo;
-		
 	}
 
 	public int getId() {

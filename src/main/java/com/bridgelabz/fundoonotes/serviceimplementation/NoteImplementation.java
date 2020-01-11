@@ -1,13 +1,12 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
-
-import java.util.ArrayList;   
+   
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
+import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
+import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.model.Images;
 import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
@@ -48,8 +47,8 @@ public class NoteImplementation implements NoteService
 		}
 		
 		
-		List<Label> labels=getLabels(notedto);
-		List<Images> images=getImages(notedto,notesid); 
+		List<Label> labels=getLabels(notedto.getLabel(),jwt);
+		List<Images> images=getImages(notedto.getImages(),notesid); 
 		Notes notes=new Notes(notedto.getTitle(),notedto.getTakeanote(),notedto.getReminder(),notedto.getColor(),labels,images,user);
 		repository.save(notes);
 		return true;
@@ -63,37 +62,39 @@ public class NoteImplementation implements NoteService
 	}
 	
 	
-	public List<Images> getImages(NoteDTO notedto,int notesid)
+	public List<Images> getImages(List<String> dtoimages,int notesid)
 	{
 
 	
-	    notedto.getImages().stream().map(s-> repository.createImages(s,notesid));
+	    dtoimages.stream().map(s-> repository.createImages(s,notesid));
 	    List<Images> images=repository.getImages(notesid);
 	    return images;
 	}
 	
 	
-	public List<Label> getLabels(NoteDTO notedto)
+	public List<Label> getLabels(List<String> dtolabels,String jwt)
 	{
-		int size=notedto.getLabel().size(); 
+		int size=dtolabels.size(); 
+		UserInfo user=repository.findByUsername(utility.getUsernameFromToken(jwt));
 		for(int i=0;i<size;i++)
 		{
-			if(repository.getLabel(notedto.getLabel().get(i))==null)
+			if(repository.getLabel(dtolabels.get(i))==null)
 			{
-				repository.createLabel(notedto.getLabel().get(i));
+				repository.createLabel(dtolabels.get(i),user);
 			}
 		}
-		List<Label> labels=notedto.getLabel().stream().map(s-> repository.findLabelByName(s)).collect(Collectors.toList());
+		List<Label> labels=dtolabels.stream().map(s-> repository.findLabelByName(s)).collect(Collectors.toList());
 		
 		return labels;
 	}
 	
-	public void deleteNote(int id,String jwt) throws JWTTokenException
+	public void deleteNote(int id,String jwt) throws JWTTokenException, NoteNotFoundException
 	{
 		UserInfo user=repository.findByUsername(utility.getUsernameFromToken(jwt));
 		if(utility.validateToken(jwt) && user!=null)
 		{
-		repository.deleteByNoteid(id);
+		if(repository.deleteByNoteid(id)==null)
+			throw new NoteNotFoundException("No Note available with this ID");
 		}
 		else
 		{
@@ -102,5 +103,22 @@ public class NoteImplementation implements NoteService
 	}
 
 
+	public boolean updateNote(UpdateNoteDTO updatedto,String jwt) throws NoteNotFoundException,JWTTokenException
+	{
+		if(utility.validateToken(jwt))
+		{
+		List<Label> labels=getLabels(updatedto.getLabel(),jwt);
+		List<Images> images=getImages(updatedto.getImages(),updatedto.getId()); 
+		Notes note=repository.getNotes(updatedto.getId());
+		if(note==null) throw new NoteNotFoundException("Note not available for this id");
+		System.out.println(note);
+		Notes notes=utility.getUpdatedNote(updatedto, note, images, labels);
+		repository.save(notes);
+		return true;
+		}
+		else
+			throw new JWTTokenException("Problem with your Token");
+	}
+	
 	
 }

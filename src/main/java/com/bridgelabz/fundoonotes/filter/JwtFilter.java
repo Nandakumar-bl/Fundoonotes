@@ -12,8 +12,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.serviceimplementation.UserImplementation;
 import com.bridgelabz.fundoonotes.utility.Utility;
+
+import lombok.SneakyThrows;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -26,6 +30,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	
 
 	@Override
+	@SneakyThrows
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String header = request.getHeader("header");
@@ -48,7 +53,14 @@ public class JwtFilter extends OncePerRequestFilter {
 				upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(upat);
 			}
+			else
+			{
+				throw new JWTTokenException("Token is not valid");
+			}
+		
 		}
 		filterChain.doFilter(request, response);
+		
+		
 	}
 }

@@ -3,6 +3,7 @@ package com.bridgelabz.fundoonotes.utility;
 import java.util.ArrayList;
 import java.util.Date; 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.fundoonotes.dto.LoginDTO;
+import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
+import com.bridgelabz.fundoonotes.model.Images;
+import com.bridgelabz.fundoonotes.model.Label;
+import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.UserRepository;
 
@@ -129,6 +134,23 @@ public class Utility {
 	public boolean checkmail(String email)
 	{
 		return userRepository.findByEmail(email)!=null;
+	}
+	
+	public Notes getUpdatedNote(UpdateNoteDTO updatedto,Notes note,List<Images> images,List<Label> labels)
+	{
+		
+		note.setIsarchieve(updatedto.isIsarchieve());
+		note.setIstrash(updatedto.isIstrash());
+		note.setIspinned(updatedto.isIspinned());
+		note.setColor(updatedto.getColor());
+		note.setTitle(updatedto.getTitle());
+		note.setTakeanote(updatedto.getTakeanote());
+		note.setImages(images);
+		note.setLabel(labels);
+		note.setReminder(updatedto.getReminder());
+		
+		return note;
+		
 	}
 
 	

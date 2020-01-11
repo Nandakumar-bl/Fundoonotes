@@ -18,7 +18,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.bridgelabz.fundoonotes.response.ErrorResponse;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 
-@SuppressWarnings({"unchecked","rawtypes"})
 @RestControllerAdvice
 public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 {
@@ -44,6 +43,38 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 	{
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(400,"Issue with mail id",ex.getMessage()));
 		
+	}
+	
+	@ExceptionHandler(NoteNotFoundException.class)
+	public ResponseEntity<ErrorResponse> noteNotFound(NoteNotFoundException ex)
+	{
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(400,"Issue in Notes",ex.getMessage()));
+		
+	}
+	
+	@ExceptionHandler(UpdatingNoteException.class)
+	public ResponseEntity<ErrorResponse> updatingNote(UpdatingNoteException ex)
+	{
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(400,"Issue in Notes updating",ex.getMessage()));
+		
+	}
+	
+	@ExceptionHandler(LabelAlreadyExsistException.class)
+	public ResponseEntity<ErrorResponse> labelFound(LabelAlreadyExsistException ex)
+	{
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label Error",ex.getMessage()));
+	}
+	
+	@ExceptionHandler(LabelUpdatingException.class)
+	public ResponseEntity<ErrorResponse> updateLabel(LabelUpdatingException ex)
+	{
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label Error",ex.getMessage()));
+	}
+	
+	@ExceptionHandler(LabelNotFoundException.class)
+	public ResponseEntity<ErrorResponse> updateLabel(LabelNotFoundException ex)
+	{
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label Error",ex.getMessage()));
 	}
 	
 	

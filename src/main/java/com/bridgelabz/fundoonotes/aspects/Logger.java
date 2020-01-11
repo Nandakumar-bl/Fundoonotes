@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.aspects;
 
-import org.aspectj.lang.JoinPoint ;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;

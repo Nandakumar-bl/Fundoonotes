@@ -22,15 +22,21 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query("from UserInfo where username=?1")
 	UserInfo findByUsername(String username);
 	
+	@Query("from UserInfo where id=?1")
+	UserInfo findUserById(int id);
+	
 	@Query("from Label where label=?1")
 	Label findLabelByName(String label);
 	
 	@Query("from Label where label=?1")
 	Label getLabel(String label);
 	
-	@Query(value = "insert into label(label) values(:newlabel)", nativeQuery = true)
+	@Query(value = "insert into label(label,userinfo_id) values(:newlabel,:user)", nativeQuery = true)
 	@Modifying
-	Integer createLabel(String newlabel);
+	Integer createLabel(String newlabel,UserInfo user);
+	
+	@Query("from Notes where id=?1")
+	Notes getNotes(int id);
 	
 	
 	
