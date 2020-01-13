@@ -43,7 +43,7 @@ public class Userconfiguration extends WebSecurityConfigurerAdapter
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/**")
+			.antMatchers("/user/**")
 			.permitAll()
 			.anyRequest().permitAll()//.authenticated()
 			.and().addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)

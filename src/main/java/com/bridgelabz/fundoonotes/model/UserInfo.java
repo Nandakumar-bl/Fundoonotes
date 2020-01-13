@@ -1,5 +1,6 @@
 package com.bridgelabz.fundoonotes.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 @Entity
-public class UserInfo 
+public class UserInfo implements Serializable
 {
 	
 	@Id
@@ -45,9 +46,9 @@ public class UserInfo
 	@NotNull
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date createddate;
-	@OneToMany(mappedBy = "userinfo")
+	@OneToMany
 	private List<Notes> notes;
-	@OneToMany(mappedBy = "userinfo")
+	@OneToMany
 	private List<Label> labels;
 		
 	

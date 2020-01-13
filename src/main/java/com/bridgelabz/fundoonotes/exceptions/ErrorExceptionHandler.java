@@ -78,6 +78,13 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 	}
 	
 	
+	@ExceptionHandler(UserException.class)
+	public ResponseEntity<ErrorResponse> userException(UserException ex)
+	{
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"User Exception",ex.getMessage()));
+	}
+	
+	
 	
 
 }

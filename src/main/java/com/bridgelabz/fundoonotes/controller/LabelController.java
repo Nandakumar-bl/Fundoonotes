@@ -15,6 +15,7 @@ import com.bridgelabz.fundoonotes.dto.LabelDTO;
 import com.bridgelabz.fundoonotes.exceptions.LabelAlreadyExsistException;
 import com.bridgelabz.fundoonotes.exceptions.LabelNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.LabelUpdatingException;
+import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.service.LabelService;
@@ -62,5 +63,34 @@ public class LabelController
 			  return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(400,"label not deleted",null));
 		  
 	  }
+	  
+	  @PostMapping("/getLabel/{id}")
+		public ResponseEntity<Response> getLabelById(@PathVariable("id") int id) throws LabelNotFoundException
+		{
+			if(labelservice.getLabel(id)!=null)
+				return ResponseEntity.ok().body(new Response(200, "Your note fetched",labelservice.getLabel(id)));
+			else
+				throw new LabelNotFoundException("Label Not available for this id");
+		}
+		
+		
+		@PostMapping("/getall")
+		public ResponseEntity<Response> getAllLabel(@RequestHeader("jwt") String jwt ) throws LabelNotFoundException
+		{
+			if(labelservice.getAllUserLabels(jwt)!=null)
+				return ResponseEntity.ok().body(new Response(200, "Your note fetched",labelservice.getAllUserLabels(jwt)));
+			else
+				throw new LabelNotFoundException("No Label available for this id");
+		}
+		
+		
+		@PostMapping("/noteid/{id}")
+		public ResponseEntity<Response> getLabelByNote(@PathVariable("id") int id,@RequestHeader("jwt") String jwt) throws LabelNotFoundException
+		{
+	   return ResponseEntity.ok().body(new Response(200, "Your note fetched",labelservice.findbynoteid(id)));
+		}
+		
+		
+		
 	 
 }

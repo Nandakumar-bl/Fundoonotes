@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -151,6 +153,20 @@ public class Utility {
 		
 		return note;
 		
+	}
+	
+	@Cacheable(value = "mycache",key="#jwt")
+	public UserInfo getUser(String jwt)
+	{
+		System.out.println("inside cache");
+		UserInfo user=userRepository.findByUsername(getUsernameFromToken(jwt));
+		return user;
+		
+	}
+	
+	@CacheEvict(value = "mycache", key="#jwt")
+	public void cache(String jwt)
+	{	
 	}
 
 	

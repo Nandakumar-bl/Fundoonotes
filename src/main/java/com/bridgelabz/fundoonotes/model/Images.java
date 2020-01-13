@@ -6,6 +6,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Images 
 {
@@ -13,9 +15,10 @@ public class Images
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String imagelink;
-	
-	@ManyToOne
-	private Notes notes;
+	@JsonIgnore
+	  @ManyToOne 
+	  private Notes notes;
+	 
 	
 	public int getId() {
 		return id;

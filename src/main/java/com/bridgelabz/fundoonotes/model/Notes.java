@@ -30,7 +30,7 @@ public class Notes {
     private String color;
 	@ManyToMany
 	private List<Label> label;
-	@OneToMany(mappedBy = "notes")
+	@OneToMany()
 	private List<Images> images;
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date CreatedTime;

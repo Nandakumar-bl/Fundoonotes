@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Label {
 	
@@ -15,12 +17,15 @@ public class Label {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String label;
-	@ManyToMany(mappedBy = "label")
-	private List<Notes> notes;
-	@ManyToOne
-	private UserInfo userinfo;
+	/*
+	 * @ManyToMany(mappedBy = "label") private List<Notes> notes;
+	 */
 	
-	
+	@JsonIgnore
+	  @ManyToOne 
+	  private UserInfo userinfo;
+	  
+	 
 	
 	public int getId() {
 		return id;
@@ -38,17 +43,10 @@ public class Label {
 		this.label = label;
 	}
 
-	public List<Notes> getNotes() {
-		return notes;
-	}
-
-	public void setNotes(List<Notes> notes) {
-		this.notes = notes;
-	}
 
 	@Override
 	public String toString() {
-		return "Label [id=" + id + ", label=" + label + ", notes=" + notes + "]";
+		return "Label [id=" + id + ", label=" + label + "]";
 	}
 	
 	

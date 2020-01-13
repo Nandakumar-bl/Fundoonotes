@@ -38,6 +38,12 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query("from Notes where id=?1")
 	Notes getNotes(int id);
 	
+	@Query(value = "Select * from notes where userinfo_id=:id", nativeQuery = true)
+	List<Notes> getAllNotes(int id);
+	
+	@Query(value = "Select * from notes where isarchieve=1 and userinfo_id=:id", nativeQuery = true)
+	List<Notes> getAllArchieve(int id);
+	
 	
 	
 	@Query(value = "select max(id) from notes",nativeQuery = true)
@@ -56,6 +62,8 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query("delete from Notes where id=?1")
 	@Modifying
 	Integer deleteByNoteid(int id);
+	
+	
 	
 
 }

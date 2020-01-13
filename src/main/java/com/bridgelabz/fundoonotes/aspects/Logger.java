@@ -19,7 +19,7 @@ public class Logger
 	public void beforeloginMethod(JoinPoint JointPoint) throws Throwable
 	{
 		log.info("Before login");
-	    log.info("method invoked:"+JointPoint.getSignature().getName()+" Logged-in user:"+JointPoint.getArgs()[0]);	
+	    log.info("method invoked: "+JointPoint.getSignature().getName()+" Logged-in user:"+JointPoint.getArgs()[0]);	
 		
 	}
 	@AfterReturning("execution(* com.bridgelabz.fundoonotes.serviceimplementation.UserImplementation.login(*))")
@@ -32,9 +32,9 @@ public class Logger
 	  @Around("execution(* com.bridgelabz.fundoonotes.*.*.*(*)) && !execution(* com.bridgelabz.fundoonotes.serviceimplementation.UserImplementation.login(*))") 
 	  public Object commonMethod(ProceedingJoinPoint JointPoint) throws Throwable 
 	  {
-	  log.info("Before"+JointPoint.getSignature().getName()+" method");
+	  log.info("Before "+JointPoint.getSignature().getName()+" method");
 	  Object retu=  JointPoint.proceed();
-	  log.info("After"+JointPoint.getSignature().getName()+" method"); 
+	  log.info("After "+JointPoint.getSignature().getName()+" method"); 
 	  return retu;
 	  }
 	  
