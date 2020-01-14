@@ -32,7 +32,7 @@ public class NoteController {
 	@PostMapping("/new")
 	public ResponseEntity<Response> newNote(@RequestBody NoteDTO notedto, @RequestHeader("jwt") String jwt)
 			throws JWTTokenException, UserException {
-		if (noteservice.saveNewNote(notedto, jwt)) {
+		if (noteservice.saveNewNoteImpl(notedto, jwt)) {
 			return ResponseEntity.ok().body(new Response(200, "Note Created", notedto));
 		} else
 			return ResponseEntity.badRequest().body(new Response(400, "problem in creating note", notedto));
@@ -42,7 +42,7 @@ public class NoteController {
 	public ResponseEntity<Response> deleteNote(@PathVariable int id, @RequestHeader("jwt") String jwt)
 			throws JWTTokenException, NoteNotFoundException {
 
-		noteservice.deleteNote(id, jwt);
+		noteservice.deleteNoteImpl(id, jwt);
 		return ResponseEntity.ok().body(new Response(200, "Note Deleted", "Deleted note:" + id));
 
 	}
@@ -51,7 +51,7 @@ public class NoteController {
 	public ResponseEntity<Response> updateNote(@RequestBody UpdateNoteDTO updatedto, @RequestHeader("jwt") String jwt)
 			throws Exception {
 
-		if (noteservice.updateNote(updatedto, jwt)) {
+		if (noteservice.updateNoteImpl(updatedto, jwt)) {
 			return ResponseEntity.ok().body(new Response(200, "Your note is updated successfully", updatedto));
 		} else {
 			throw new UpdatingNoteException("problem with updating your notes");
@@ -61,8 +61,8 @@ public class NoteController {
 	@PostMapping("/getnote/{id}")
 	public ResponseEntity<Response> getNoteById(@PathVariable("id") int id) throws NoteNotFoundException
 	{
-		if(noteservice.getNote(id)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Your note fetched",noteservice.getNote(id)));
+		if(noteservice.getNoteImpl(id)!=null)
+			return ResponseEntity.ok().body(new Response(200, "Your note fetched",noteservice.getNoteImpl(id)));
 		else
 			throw new NoteNotFoundException("Note Not available for this id");
 	}
@@ -71,21 +71,40 @@ public class NoteController {
 	@PostMapping("/getall")
 	public ResponseEntity<Response> getAllNote(@RequestHeader("jwt") String jwt ) throws NoteNotFoundException
 	{
-		if(noteservice.getAllNote(jwt)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Your note fetched",noteservice.getAllNote(jwt)));
+		if(noteservice.getAllNoteImpl(jwt)!=null)
+			return ResponseEntity.ok().body(new Response(200, "Your note fetched",noteservice.getAllNoteImpl(jwt)));
 		else
 			throw new NoteNotFoundException("No Notes available for this id");
 	}
 	
 	
-	@PostMapping("/getarchieve")
+	@PostMapping("/getallarchieve")
 	public ResponseEntity<Response> getAllArchieve(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
 	{
-		if(noteservice.getAllArchieve(jwt)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllArchieve(jwt)));
+		if(noteservice.getAllArchieveImpl(jwt)!=null)
+			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllArchieveImpl(jwt)));
 		else
 			throw new NoteNotFoundException("No Archieve notes");
 			
+	}
+	
+	@PostMapping("/getallpinned")
+	public ResponseEntity<Response> getAllPinnedNotes(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
+	{
+		if(noteservice.getAllPinnedImpl(jwt)!=null)
+			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllPinnedImpl(jwt)));
+		else
+			throw new NoteNotFoundException("No Pinned notes available");
+			
+			
+	}
+	@PostMapping("/getalltrash")
+	public ResponseEntity<Response> getAlltrashNotes(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
+	{
+		if(noteservice.getAllTrashNotesImpl(jwt)!=null)
+			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllTrashNotesImpl(jwt)));
+		else
+			throw new NoteNotFoundException("No trash notes available");		
 	}
 	
 	

@@ -12,21 +12,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Label {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String label;
-	/*
-	 * @ManyToMany(mappedBy = "label") private List<Notes> notes;
-	 */
-	
+
 	@JsonIgnore
-	  @ManyToOne 
-	  private UserInfo userinfo;
-	  
-	 
-	
+	@ManyToMany(mappedBy = "label")
+	private List<Notes> notes;
+
+	@JsonIgnore
+	@ManyToOne
+	private UserInfo userinfo;
+
 	public int getId() {
 		return id;
 	}
@@ -43,12 +42,9 @@ public class Label {
 		this.label = label;
 	}
 
-
 	@Override
 	public String toString() {
 		return "Label [id=" + id + ", label=" + label + "]";
 	}
-	
-	
 
 }

@@ -63,7 +63,12 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Modifying
 	Integer deleteByNoteid(int id);
 	
+	@Query("from Notes where ispinned=true and userinfo=?1")
+	List<Notes> getAllPinned(UserInfo user);
 	
+	
+	@Query("from Notes where istrash=true and userinfo=?1")
+	List<Notes> getAllTrash(UserInfo user);
 	
 
 }

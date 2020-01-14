@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		String header = request.getHeader("jwt");
 		
 		String username=null;
-		String jwt=null;
+		String jwt=null;		
 		
 		if (header != null) 
 		{

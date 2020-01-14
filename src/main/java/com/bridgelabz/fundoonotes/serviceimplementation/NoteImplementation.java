@@ -41,7 +41,7 @@ public class NoteImplementation implements NoteService
 	}
 	
 	
-	public boolean saveNewNote(NoteDTO notedto,String jwt) throws JWTTokenException, UserException
+	public boolean saveNewNoteImpl(NoteDTO notedto,String jwt) throws JWTTokenException, UserException
 	{	
 		
 		UserInfo user=utility.getUser(jwt);
@@ -55,11 +55,9 @@ public class NoteImplementation implements NoteService
 		catch (NullPointerException e) 
 		{
 			notesid=1;
-		}
-		
-		
-		List<Label> labels=getLabels(notedto.getLabel(),jwt);
-		List<Images> images=getImages(notedto.getImages(),notesid); 
+		}		
+		List<Label> labels=getLabelsImpl(notedto.getLabel(),jwt);
+		List<Images> images=getImagesImpl(notedto.getImages(),notesid); 
 		Notes notes=new Notes(notedto.getTitle(),notedto.getTakeanote(),notedto.getReminder(),notedto.getColor(),labels,images,user);
 		repository.save(notes);
 		return true;
@@ -74,7 +72,7 @@ public class NoteImplementation implements NoteService
 	
 	
 	
-	public List<Images> getImages(List<String> dtoimages,int notesid)
+	public List<Images> getImagesImpl(List<String> dtoimages,int notesid)
 	{
 
 	
@@ -84,7 +82,7 @@ public class NoteImplementation implements NoteService
 	}
 	
 	
-	public List<Label> getLabels(List<String> dtolabels,String jwt)
+	public List<Label> getLabelsImpl(List<String> dtolabels,String jwt)
 	{
 		int size=dtolabels.size(); 
 		UserInfo user=utility.getUser(jwt);
@@ -101,7 +99,7 @@ public class NoteImplementation implements NoteService
 		return labels;
 	}
 	
-	public void deleteNote(int id,String jwt) throws JWTTokenException, NoteNotFoundException
+	public void deleteNoteImpl(int id,String jwt) throws JWTTokenException, NoteNotFoundException
 	{
 		UserInfo user=utility.getUser(jwt);
 		if(utility.validateToken(jwt) && user!=null)
@@ -116,12 +114,12 @@ public class NoteImplementation implements NoteService
 	}
 
 
-	public boolean updateNote(UpdateNoteDTO updatedto,String jwt) throws NoteNotFoundException,JWTTokenException
+	public boolean updateNoteImpl(UpdateNoteDTO updatedto,String jwt) throws NoteNotFoundException,JWTTokenException
 	{
 		if(utility.validateToken(jwt))
 		{
-		List<Label> labels=getLabels(updatedto.getLabel(),jwt);
-		List<Images> images=getImages(updatedto.getImages(),updatedto.getId()); 
+		List<Label> labels=getLabelsImpl(updatedto.getLabel(),jwt);
+		List<Images> images=getImagesImpl(updatedto.getImages(),updatedto.getId()); 
 		Notes note=repository.getNotes(updatedto.getId());
 		if(note==null) throw new NoteNotFoundException("Note not available for this id");
 		System.out.println(note);
@@ -134,22 +132,39 @@ public class NoteImplementation implements NoteService
 	}
 	
 	
-	public Notes getNote(int id)
+	public Notes getNoteImpl(int id)
 	{
 		return repository.getNotes(id);
 	}
 	
 	
-	public List<Notes> getAllNote(String jwt)
+	public List<Notes> getAllNoteImpl(String jwt)
 	{
 		UserInfo user=utility.getUser(jwt);
 		return repository.getAllNotes(user.getId());
 	}
 	
-	public List<Notes> getAllArchieve(String jwt)
+	public List<Notes> getAllArchieveImpl(String jwt)
 	{
 		UserInfo user=utility.getUser(jwt);
 		return repository.getAllArchieve(user.getId());
+	}
+
+
+	@Override
+	public List<Notes> getAllPinnedImpl(String jwt) 
+	{
+		UserInfo user=utility.getUser(jwt);
+		System.out.println(user);
+		return repository.getAllPinned(user);
+	}
+	
+	
+	@Override
+	public List<Notes> getAllTrashNotesImpl(String jwt) 
+	{
+		UserInfo user=utility.getUser(jwt);
+		return repository.getAllTrash(user);
 	}
 	
 	

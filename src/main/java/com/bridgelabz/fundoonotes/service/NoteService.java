@@ -12,16 +12,20 @@ import com.bridgelabz.fundoonotes.response.JWTTokenException;
 
 public interface NoteService {
 	
-	public boolean saveNewNote(NoteDTO notedto,String jwt) throws JWTTokenException, UserException;
+	public boolean saveNewNoteImpl(NoteDTO notedto,String jwt) throws JWTTokenException, UserException;
 
-	public void deleteNote(int id,String jwt) throws JWTTokenException, NoteNotFoundException;
+	public void deleteNoteImpl(int id,String jwt) throws JWTTokenException, NoteNotFoundException;
 	
-	public boolean updateNote(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException;
+	public boolean updateNoteImpl(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException;
 	
-	public Notes getNote(int id) throws NoteNotFoundException;
+	public Notes getNoteImpl(int id) throws NoteNotFoundException;
 
-	public List<Notes> getAllNote(String jwt);
+	public List<Notes> getAllNoteImpl(String jwt);
 	
-	public List<Notes> getAllArchieve(String jwt);
+	public List<Notes> getAllArchieveImpl(String jwt);
+
+	public List<Notes> getAllPinnedImpl(String jwt);
+
+	List<Notes> getAllTrashNotesImpl(String jwt);
 
 }

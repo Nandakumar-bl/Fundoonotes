@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -15,10 +17,13 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 import com.bridgelabz.fundoonotes.dto.LoginDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
+import com.bridgelabz.fundoonotes.dto.UserDTO;
 import com.bridgelabz.fundoonotes.model.Images;
 import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
@@ -28,6 +33,7 @@ import com.bridgelabz.fundoonotes.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import net.bytebuddy.implementation.bind.MethodDelegationBinder.BindingResolver;
 
 @Component
 public class Utility {
@@ -167,6 +173,27 @@ public class Utility {
 	@CacheEvict(value = "mycache", key="#jwt")
 	public void cache(String jwt)
 	{	
+	}
+	
+	public boolean checkCollaborator(Notes note,String email)
+	{
+		if(userRepository.getCollaborator(email,note)!=null)
+			return false;
+		else
+			return true;
+		
+	}
+	
+	public List getErrors(BindingResult result,UserDTO userdto)
+	{
+		List error=result.getAllErrors().stream().map(s->s.getDefaultMessage()).collect(Collectors.toList());
+		if(!userdto.getPassword().equals(userdto.getPasswordagain()))
+		{
+			error.add("password not matching");
+			return error;
+		}
+		else
+			return error;
 	}
 
 	

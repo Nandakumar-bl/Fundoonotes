@@ -21,6 +21,8 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class UserInfo implements Serializable
 {
@@ -46,9 +48,11 @@ public class UserInfo implements Serializable
 	@NotNull
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date createddate;
-	@OneToMany
+	@JsonIgnore
+	@OneToMany(mappedBy = "userinfo")
 	private List<Notes> notes;
-	@OneToMany
+	@JsonIgnore
+	@OneToMany(mappedBy = "userinfo")
 	private List<Label> labels;
 		
 	

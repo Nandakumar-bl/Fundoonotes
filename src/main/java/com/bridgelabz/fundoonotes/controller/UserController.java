@@ -1,5 +1,8 @@
 package com.bridgelabz.fundoonotes.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +40,9 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<Response> registration(@Valid @RequestBody UserDTO userdto, BindingResult bindingresult) {
 	
-		if (bindingresult.hasErrors()) 
+		if (bindingresult.hasErrors() || userdto.getPassword().equals(userdto.getPasswordagain())) 
 		{
-		   
-			return ResponseEntity.badRequest().
-					body(new Response(400,"Errors_found", bindingresult.getAllErrors()));
+		      	return ResponseEntity.badRequest().body(new Response(400,"Errors_found",utility.getErrors(bindingresult, userdto)));
 		} 
 		else 
 		{

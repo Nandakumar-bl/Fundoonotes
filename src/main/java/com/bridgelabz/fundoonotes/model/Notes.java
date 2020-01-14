@@ -13,6 +13,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Pattern;
 
+import org.springframework.data.annotation.LastModifiedDate;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Notes {
 	@Id
@@ -28,14 +32,20 @@ public class Notes {
 	private boolean ispinned;
 	private String reminder;
     private String color;
+    @LastModifiedDate
+    private Date lastupdate;
 	@ManyToMany
 	private List<Label> label;
-	@OneToMany()
+	@OneToMany(mappedBy = "notes")
 	private List<Images> images;
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date CreatedTime;
+	@JsonIgnore
 	@OneToOne
 	private UserInfo userinfo;
+	@OneToMany(mappedBy = "notes")
+	private List<Collaborator> collaborators;
+	
 	
 	public Notes() {}
 	
@@ -131,6 +141,7 @@ public class Notes {
 		CreatedTime = createdTime;
 	}
 
+	@JsonIgnore
 	public List<Label> getLabel() {
 		return label;
 	}
@@ -140,6 +151,38 @@ public class Notes {
 	}
 
 
+	public Date getLastupdate() {
+		return lastupdate;
+	}
+
+
+	public void setLastupdate(Date lastupdate) {
+		this.lastupdate = lastupdate;
+	}
+
+
+	public UserInfo getUserinfo() {
+		return userinfo;
+	}
+
+
+	public void setUserinfo(UserInfo userinfo) {
+		this.userinfo = userinfo;
+	}
+
+
+	
+	public List<Collaborator> getCollaborators() {
+		return collaborators;
+	}
+
+
+	public void setCollaborators(List<Collaborator> collaborators) {
+		this.collaborators = collaborators;
+	}
+
+
+	@JsonIgnore
 	public List<Images> getImages() {
 		return images;
 	}

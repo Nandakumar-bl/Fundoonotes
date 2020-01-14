@@ -9,26 +9,27 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Images 
-{
+public class Images {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String imagelink;
 	@JsonIgnore
-	  @ManyToOne 
-	  private Notes notes;
-	 
-	
+	@ManyToOne
+	private Notes notes;
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
+
 	public String getImagelink() {
 		return imagelink;
 	}
+
 	public void setImagelink(String imagelink) {
 		this.imagelink = imagelink;
 	}

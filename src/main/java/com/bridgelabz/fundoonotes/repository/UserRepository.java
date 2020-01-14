@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.bridgelabz.fundoonotes.dto.UserDTO;
+import com.bridgelabz.fundoonotes.model.Collaborator;
+import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 
 @Repository
@@ -36,4 +38,6 @@ public void changepassword(String password,String username);
 @Modifying
 public void setVerifiedEmail(String username);
 
+@Query("from Collaborator where collaborator=?1 and notes=?2")
+Collaborator getCollaborator(String email,Notes notes);
 }

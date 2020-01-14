@@ -87,7 +87,10 @@ public class LabelController
 		@PostMapping("/noteid/{id}")
 		public ResponseEntity<Response> getLabelByNote(@PathVariable("id") int id,@RequestHeader("jwt") String jwt) throws LabelNotFoundException
 		{
-	   return ResponseEntity.ok().body(new Response(200, "Your note fetched",labelservice.findbynoteid(id)));
+			if(labelservice.findbynoteid(id)!=null)
+	            return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labelservice.findbynoteid(id)));
+			else
+				throw new LabelNotFoundException("No Label available for this note id");
 		}
 		
 		
