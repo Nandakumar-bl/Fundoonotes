@@ -40,7 +40,7 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<Response> registration(@Valid @RequestBody UserDTO userdto, BindingResult bindingresult) {
 	
-		if (bindingresult.hasErrors() || userdto.getPassword().equals(userdto.getPasswordagain())) 
+		if (bindingresult.hasErrors() || !userdto.getPassword().equals(userdto.getPasswordagain())) 
 		{
 		      	return ResponseEntity.badRequest().body(new Response(400,"Errors_found",utility.getErrors(bindingresult, userdto)));
 		} 

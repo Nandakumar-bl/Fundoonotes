@@ -13,6 +13,6 @@ public interface CollaboratorService {
 	
 	public void deleteCollaboratorImpl(CollaboratorDTO collaboratordto, String jwt) throws CollaboratorNotFoundException;
 
-	public List<Collaborator> getCollaboratorByNoteId(int noteid) throws CollaboratorNotFoundException, NoteNotFoundException;
+	public List<CollaboratorDTO> getCollaboratorByNoteId(int noteid) throws CollaboratorNotFoundException, NoteNotFoundException;
 	
 }

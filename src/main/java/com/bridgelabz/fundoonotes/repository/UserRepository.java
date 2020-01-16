@@ -40,4 +40,20 @@ public void setVerifiedEmail(String username);
 
 @Query("from Collaborator where collaborator=?1 and notes=?2")
 Collaborator getCollaborator(String email,Notes notes);
+
+@Query(value =  "insert into profile(filename,user_info_id) values(:filename,:id)" ,nativeQuery = true)
+@Modifying
+Integer insertProfile(String filename,int id);
+
+@Query(value = "update profile set filename=:filename where user_info_id=:id",nativeQuery = true)
+@Modifying
+Integer updateProfile(String filename,int id);
+
+@Query(value = "delete from profile where user_info_id=:id",nativeQuery = true)
+@Modifying
+Integer deleteProfile(int id);
+
+@Query(value = "select filename from profile where user_info_id=:id",nativeQuery = true)
+String getProfile(int id); 
+
 }

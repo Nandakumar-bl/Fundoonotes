@@ -1,7 +1,9 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,24 +73,40 @@ public class LabelImplementation implements LabelService {
 			
 	}
 	
-	public Label getLabel(int id)
+	public LabelDTO getLabel(int id)
 	{
-		return repository.getLabel(id);
+		Label label=repository.getLabel(id);
+		LabelDTO labeldto=new LabelDTO();
+		BeanUtils.copyProperties(label, labeldto);
+		return labeldto;
 	}
 	
 	
 	
-	public List<Label> getAllUserLabels(String jwt)
+	public List<LabelDTO> getAllUserLabels(String jwt)
 	{
 		UserInfo user=utility.getUser(jwt);
-		return repository.getAllUserLabel(user.getId());
+		List<Label> labels=repository.getAllUserLabel(user.getId());
+		List<LabelDTO> labeldtouser=labels.stream().map(s->
+				{
+					LabelDTO temp=new LabelDTO();
+					BeanUtils.copyProperties(s,temp);
+					return temp;
+				}).collect(Collectors.toList());
+		return labeldtouser;
 	}
 	
-	public List<Label> findbynoteid(int id)
+	public List<LabelDTO> findbynoteid(int id)
 	{
 		Notes note=repository.findbynoteid(id);
-
-		return 	note.getLabel();
+		List<Label> labels=note.getLabel();
+		List<LabelDTO> noteslabel=labels.stream().map(s->
+		{
+			LabelDTO temp=new LabelDTO();
+			BeanUtils.copyProperties(s,temp);
+			return temp;
+		}).collect(Collectors.toList());
+      return noteslabel;
 	}
 
 }

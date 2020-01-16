@@ -41,7 +41,7 @@ public class LabelController
 		if(labelservice.createLabel(labeldto,jwt).equals("success"))
 				return ResponseEntity.ok().body(new Response(200,"Note Created",labeldto));
 		else
-			return ResponseEntity.badRequest().body(new Response(400,"Note not  Created",labeldto));
+			return ResponseEntity.badRequest().body(new Response(400,"Labels not  Created",labeldto));
 	}
 	
 	
@@ -68,7 +68,7 @@ public class LabelController
 		public ResponseEntity<Response> getLabelById(@PathVariable("id") int id) throws LabelNotFoundException
 		{
 			if(labelservice.getLabel(id)!=null)
-				return ResponseEntity.ok().body(new Response(200, "Your note fetched",labelservice.getLabel(id)));
+				return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labelservice.getLabel(id)));
 			else
 				throw new LabelNotFoundException("Label Not available for this id");
 		}
@@ -78,7 +78,7 @@ public class LabelController
 		public ResponseEntity<Response> getAllLabel(@RequestHeader("jwt") String jwt ) throws LabelNotFoundException
 		{
 			if(labelservice.getAllUserLabels(jwt)!=null)
-				return ResponseEntity.ok().body(new Response(200, "Your note fetched",labelservice.getAllUserLabels(jwt)));
+				return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labelservice.getAllUserLabels(jwt)));
 			else
 				throw new LabelNotFoundException("No Label available for this id");
 		}

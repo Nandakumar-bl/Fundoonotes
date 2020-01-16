@@ -18,14 +18,14 @@ public interface NoteService {
 	
 	public boolean updateNoteImpl(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException;
 	
-	public Notes getNoteImpl(int id) throws NoteNotFoundException;
+	public NoteDTO getNoteImpl(int id) throws NoteNotFoundException;
 
-	public List<Notes> getAllNoteImpl(String jwt);
+	public List<NoteDTO> getAllNoteImpl(String jwt);
 	
-	public List<Notes> getAllArchieveImpl(String jwt);
+	public List<NoteDTO> getAllArchieveImpl(String jwt);
 
-	public List<Notes> getAllPinnedImpl(String jwt);
+	public List<NoteDTO> getAllPinnedImpl(String jwt);
 
-	List<Notes> getAllTrashNotesImpl(String jwt);
+	List<NoteDTO> getAllTrashNotesImpl(String jwt);
 
 }

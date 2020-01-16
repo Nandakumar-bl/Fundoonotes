@@ -42,11 +42,15 @@ public class Utility {
 	private JavaMailSender javaMailSender;
 	private final UserRepository userRepository;
 	
+	
+
+
 	@Autowired
 	public Utility(UserRepository userRepository)
 	{
 		this.userRepository=userRepository;
 	}
+	
 	
 
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
@@ -194,6 +198,15 @@ public class Utility {
 		}
 		else
 			return error;
+	}
+	
+	public boolean checkImage(String type)
+	{
+		String trimmed=type.substring(type.lastIndexOf("."));
+		if(trimmed.equals(".png") || trimmed.equals(".jpeg") || trimmed.equals(".webp") || trimmed.equals(".bat"))
+			return true;
+		else
+			return false;
 	}
 
 	

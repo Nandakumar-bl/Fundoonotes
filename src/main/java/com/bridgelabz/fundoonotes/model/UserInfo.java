@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -54,6 +55,7 @@ public class UserInfo implements Serializable
 	@JsonIgnore
 	@OneToMany(mappedBy = "userinfo")
 	private List<Label> labels;
+	
 		
 	
 	public Date getCreateddate() {

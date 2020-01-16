@@ -109,6 +109,19 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Mail id Exception",ex.getMessage()));
 	}
 	
+	@ExceptionHandler(FileFormatException.class)
+	public ResponseEntity<ErrorResponse> FileFormatException(FileFormatException ex)
+	{
+		log.error(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Format Exception",ex.getMessage()));
+	}
+	@ExceptionHandler(NoProfileFoundException.class)
+	public ResponseEntity<ErrorResponse> NoProfileFoundException(NoProfileFoundException ex)
+	{
+		log.error(ex.getMessage());
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Profile not found",ex.getMessage()));
+	}
+	
 	
 	
 

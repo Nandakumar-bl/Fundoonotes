@@ -59,7 +59,7 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query(value="select * from user_info where email=:email",nativeQuery = true)
 	UserInfo getCollaborators(String email);
 	
-	@Query("delete from Notes where id=?1")
+	@Query(value = "update notes set istrash=true where id=?1",nativeQuery = true)
 	@Modifying
 	Integer deleteByNoteid(int id);
 	

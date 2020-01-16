@@ -1,15 +1,19 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.dto.CollaboratorDTO;
+import com.bridgelabz.fundoonotes.dto.LabelDTO;
 import com.bridgelabz.fundoonotes.exceptions.CollaboratorNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.EmailAlreadyExsist;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
 import com.bridgelabz.fundoonotes.model.Collaborator;
+import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.CollaboratorRepository;
@@ -56,7 +60,7 @@ public class CollaboratorImplementation implements CollaboratorService
 		
 	}
 	
-	public List<Collaborator> getCollaboratorByNoteId(int noteid) throws CollaboratorNotFoundException, NoteNotFoundException
+	public List<CollaboratorDTO> getCollaboratorByNoteId(int noteid) throws CollaboratorNotFoundException, NoteNotFoundException
 	{
 		
 		Notes note=repository.getNotes(noteid);
@@ -64,7 +68,16 @@ public class CollaboratorImplementation implements CollaboratorService
 		if(note==null) throw new NoteNotFoundException("No note available for this id");
 		
 		if(note.getCollaborators()!=null)
-			return note.getCollaborators();
+		{
+			List<Collaborator> collaborators=note.getCollaborators();
+			List<CollaboratorDTO> notecollaborators=collaborators.stream().map(s->
+			{
+				CollaboratorDTO temp=new CollaboratorDTO();
+				BeanUtils.copyProperties(s,temp);
+				return temp;
+			}).collect(Collectors.toList());
+	      return notecollaborators;
+		}
 		else
 			throw new CollaboratorNotFoundException("No collaborator found");
 			

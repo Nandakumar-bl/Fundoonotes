@@ -14,5 +14,5 @@ public interface LabelService
 	public boolean deletelabel(int id) throws LabelNotFoundException;
 	public Object getLabel(int id);
 	public Object getAllUserLabels(String jwt);
-	public List<Label> findbynoteid(int id);
+	public List<LabelDTO> findbynoteid(int id);
 }
