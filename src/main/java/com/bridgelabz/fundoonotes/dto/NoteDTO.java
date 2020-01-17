@@ -1,9 +1,15 @@
 package com.bridgelabz.fundoonotes.dto;
 
-import java.util.List; 
+import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document; 
+
+@Document(indexName = "notes",type = "NoteDTO",shards = 2)
 public class NoteDTO 
 {
+	@Id
+	private int id;
 	private String title;
 	private String takeanote;
 	private boolean isarchieve;
@@ -14,6 +20,13 @@ public class NoteDTO
 	private List<String> images;
 	
 	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
 	public String getTitle() {
 		return title;
 	}

@@ -1,14 +1,21 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
@@ -18,6 +25,7 @@ import com.bridgelabz.fundoonotes.model.Images;
 import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
+import com.bridgelabz.fundoonotes.repository.Elasticrepository;
 import com.bridgelabz.fundoonotes.repository.NoteRepository;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.service.NoteService;
@@ -29,12 +37,15 @@ import ch.qos.logback.core.joran.util.beans.BeanUtil;
 public class NoteImplementation implements NoteService {
 	NoteRepository repository;
 	Utility utility;
+	Elasticrepository elasticrepo;
+	@Autowired
+	private ElasticsearchTemplate template;
 
 	@Autowired
-	public NoteImplementation(NoteRepository repository, Utility utility) {
+	public NoteImplementation(NoteRepository repository, Utility utility,Elasticrepository elasticrepo) {
 		this.repository = repository;
 		this.utility = utility;
-
+		this.elasticrepo=elasticrepo;
 	}
 
 	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws JWTTokenException, UserException {
@@ -173,6 +184,18 @@ public class NoteImplementation implements NoteService {
 		else
 			throw new  NoteNotFoundException("your bin is clean already");
 		
+	}
+	
+	public List<NoteDTO> getElasticNotes(String text,String jwt)
+	{
+		List<NoteDTO> notes=getAllNoteImpl(jwt);
+		notes.stream().map(note->elasticrepo.save(note));
+		String search = ".*" + text + ".*";
+		SearchQuery searchQuery = new NativeSearchQueryBuilder()
+				.withFilter(QueryBuilders.regexpQuery("firstname", search)).build();
+		List<NoteDTO> noteselastic = template.queryForList(searchQuery, NoteDTO.class);
+
+	        return noteselastic;
 	}
 	
 	

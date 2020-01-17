@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -121,6 +122,15 @@ public class NoteController {
 	{
 		noteservice.emptyTheBin(jwt);
 		return ResponseEntity.ok().body(new Response(200,"Bin cleared","username:"+utility.getUsernameFromToken(jwt)));
+	}
+	
+	@GetMapping("/{text}")
+	public ResponseEntity<Response> elasticSearch(@PathVariable String text,@RequestHeader String jwt)
+	{
+		List<NoteDTO> notes=noteservice.getElasticNotes(text,jwt);
+		return ResponseEntity.ok().body(new Response(200,"Notes are:",notes));
+		
+		
 	}
 	
 	

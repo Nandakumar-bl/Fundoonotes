@@ -29,5 +29,8 @@ public interface NoteService {
 	List<NoteDTO> getAllTrashNotesImpl(String jwt);
 
 	public void emptyTheBin(String jwt) throws NoteNotFoundException;
+	
+	public List<NoteDTO> getElasticNotes(String text,String jwt);
+
 
 }
