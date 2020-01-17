@@ -28,7 +28,7 @@ public class ProfilePicController {
 	@Autowired
 	ProfileService profileservice;
 
-	@PostMapping("/uploadpic")
+	@PostMapping("/upload")
 	public ResponseEntity<Response> uploadProfile(@RequestPart("file") MultipartFile file,
 			@RequestHeader("jwt") String jwt) throws Exception {
 
@@ -37,7 +37,7 @@ public class ProfilePicController {
 
 	}
 
-	@PutMapping("/editprofile")
+	@PutMapping("/edit")
 	public ResponseEntity<Response> EditProfile(@RequestPart("file") MultipartFile file,
 			@RequestHeader("jwt") String jwt) throws IOException, FileFormatException {
 
@@ -46,7 +46,7 @@ public class ProfilePicController {
 
 	}
 
-	@DeleteMapping("/deleteprofile")
+	@DeleteMapping("/delete")
 	public ResponseEntity<Response> DeleteProfile(@RequestHeader("jwt") String jwt) throws NoProfileFoundException {
 		profileservice.deleteProfilePic(jwt);
 		return ResponseEntity.ok().body(new Response(200, "sccessfully Deleted", null));

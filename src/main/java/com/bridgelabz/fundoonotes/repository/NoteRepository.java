@@ -70,5 +70,8 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query("from Notes where istrash=true and userinfo=?1")
 	List<Notes> getAllTrash(UserInfo user);
 	
+	@Query(value = "delete from notes where istrash=true and userinfo_id=?1" ,nativeQuery = true)
+	@Modifying
+	Integer cleanBin(int id);
 
 }

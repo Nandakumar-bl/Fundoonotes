@@ -1,9 +1,12 @@
 package com.bridgelabz.fundoonotes.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +19,7 @@ import com.bridgelabz.fundoonotes.exceptions.LabelAlreadyExsistException;
 import com.bridgelabz.fundoonotes.exceptions.LabelNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.LabelUpdatingException;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
+import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.service.LabelService;
@@ -54,7 +58,7 @@ public class LabelController
 			  throw new LabelUpdatingException("Your label is not updated");
 	  }
 	  
-	  @DeleteMapping("/delete/{id}")
+	  @DeleteMapping("/{id}")
 	  public ResponseEntity<Response>  deleteLabel(@PathVariable("id") int id) throws LabelNotFoundException
 	  {
 		  if(labelservice.deletelabel(id))
@@ -64,31 +68,34 @@ public class LabelController
 		  
 	  }
 	  
-	  @PostMapping("/getLabel/{id}")
+	  @GetMapping("/{id}")
 		public ResponseEntity<Response> getLabelById(@PathVariable("id") int id) throws LabelNotFoundException
 		{
-			if(labelservice.getLabel(id)!=null)
-				return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labelservice.getLabel(id)));
+		  LabelDTO label=labelservice.getLabel(id);
+			if(label!=null)
+				return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",label));
 			else
 				throw new LabelNotFoundException("Label Not available for this id");
 		}
 		
 		
-		@PostMapping("/getall")
+		@GetMapping("/all")
 		public ResponseEntity<Response> getAllLabel(@RequestHeader("jwt") String jwt ) throws LabelNotFoundException
 		{
-			if(labelservice.getAllUserLabels(jwt)!=null)
-				return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labelservice.getAllUserLabels(jwt)));
+			List<LabelDTO> labels=labelservice.getAllUserLabels(jwt);
+			if(labels!=null)
+				return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labels));
 			else
 				throw new LabelNotFoundException("No Label available for this id");
 		}
 		
 		
-		@PostMapping("/noteid/{id}")
-		public ResponseEntity<Response> getLabelByNote(@PathVariable("id") int id,@RequestHeader("jwt") String jwt) throws LabelNotFoundException
+		@GetMapping("/{noteid}")
+		public ResponseEntity<Response> getLabelByNote(@PathVariable("noteid") int id,@RequestHeader("jwt") String jwt) throws LabelNotFoundException
 		{
-			if(labelservice.findbynoteid(id)!=null)
-	            return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labelservice.findbynoteid(id)));
+			List<LabelDTO> labels=labelservice.findbynoteid(id);
+			if(labels!=null)
+	            return ResponseEntity.ok().body(new Response(200, "Your Labels fetched",labels));
 			else
 				throw new LabelNotFoundException("No Label available for this note id");
 		}

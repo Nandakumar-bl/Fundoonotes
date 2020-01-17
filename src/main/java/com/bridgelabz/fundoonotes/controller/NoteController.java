@@ -1,9 +1,12 @@
 package com.bridgelabz.fundoonotes.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,6 +19,7 @@ import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UpdatingNoteException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
+import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.service.NoteService;
@@ -38,7 +42,7 @@ public class NoteController {
 			return ResponseEntity.badRequest().body(new Response(400, "problem in creating note", notedto));
 	}
 
-	@DeleteMapping("/delete/{id}")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<Response> deleteNote(@PathVariable int id, @RequestHeader("jwt") String jwt)
 			throws JWTTokenException, NoteNotFoundException {
 
@@ -47,7 +51,7 @@ public class NoteController {
 
 	}
 
-	@PutMapping("/updatenote")
+	@PutMapping("/update")
 	public ResponseEntity<Response> updateNote(@RequestBody UpdateNoteDTO updatedto, @RequestHeader("jwt") String jwt)
 			throws Exception {
 
@@ -58,54 +62,67 @@ public class NoteController {
 		}
 	}
 
-	@PostMapping("/getnote/{id}")
+	@GetMapping("/{id}")
 	public ResponseEntity<Response> getNoteById(@PathVariable("id") int id) throws NoteNotFoundException
 	{
-		if(noteservice.getNoteImpl(id)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Your note fetched",noteservice.getNoteImpl(id)));
+		NoteDTO note=noteservice.getNoteImpl(id);
+		if(note!=null)
+			return ResponseEntity.ok().body(new Response(200, "Your note fetched",note));
 		else
 			throw new NoteNotFoundException("Note Not available for this id");
 	}
 	
 	
-	@PostMapping("/getall")
+	@GetMapping("/all")
 	public ResponseEntity<Response> getAllNote(@RequestHeader("jwt") String jwt ) throws NoteNotFoundException
 	{
-		if(noteservice.getAllNoteImpl(jwt)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Your note fetched",noteservice.getAllNoteImpl(jwt)));
+		List<NoteDTO> notes=noteservice.getAllNoteImpl(jwt);
+		if(notes!=null)
+			return ResponseEntity.ok().body(new Response(200, "Your note fetched",notes));
 		else
 			throw new NoteNotFoundException("No Notes available for this id");
 	}
 	
 	
-	@PostMapping("/getallarchieve")
+	@PostMapping("/archieve")
 	public ResponseEntity<Response> getAllArchieve(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
 	{
-		if(noteservice.getAllArchieveImpl(jwt)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllArchieveImpl(jwt)));
+		List<NoteDTO> notes=noteservice.getAllArchieveImpl(jwt);
+		if(notes!=null)
+			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",notes));
 		else
 			throw new NoteNotFoundException("No Archieve notes");
 			
 	}
 	
-	@PostMapping("/getallpinned")
+	@GetMapping("/pinned")
 	public ResponseEntity<Response> getAllPinnedNotes(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
 	{
-		if(noteservice.getAllPinnedImpl(jwt)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllPinnedImpl(jwt)));
+		List<NoteDTO> notes=noteservice.getAllPinnedImpl(jwt);
+		if(notes!=null)
+			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",notes));
 		else
 			throw new NoteNotFoundException("No Pinned notes available");
 			
 			
 	}
-	@PostMapping("/getalltrash")
+	@GetMapping("/trash")
 	public ResponseEntity<Response> getAlltrashNotes(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
 	{
-		if(noteservice.getAllTrashNotesImpl(jwt)!=null)
-			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",noteservice.getAllTrashNotesImpl(jwt)));
+		List<NoteDTO> notes=noteservice.getAllTrashNotesImpl(jwt);
+		if(notes!=null)
+			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",notes));
 		else
 			throw new NoteNotFoundException("No trash notes available");		
 	}
+	
+	@DeleteMapping("/emptybin")
+	public ResponseEntity<Response> emptyBin(@RequestHeader("jwt") String jwt) throws NoteNotFoundException
+	{
+		noteservice.emptyTheBin(jwt);
+		return ResponseEntity.ok().body(new Response(200,"Bin cleared","username:"+utility.getUsernameFromToken(jwt)));
+	}
+	
 	
 	
 

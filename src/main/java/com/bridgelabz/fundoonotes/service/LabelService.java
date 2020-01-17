@@ -12,7 +12,7 @@ public interface LabelService
 	public String createLabel(LabelDTO labeldto,String jwt) throws LabelAlreadyExsistException;
 	public String updateLabel(LabelDTO labeldto) throws LabelAlreadyExsistException;
 	public boolean deletelabel(int id) throws LabelNotFoundException;
-	public Object getLabel(int id);
-	public Object getAllUserLabels(String jwt);
+	public LabelDTO getLabel(int id);
+	public List<LabelDTO> getAllUserLabels(String jwt);
 	public List<LabelDTO> findbynoteid(int id);
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,22 +30,22 @@ public class CollaboratorController
 		this.service = service;
 	}
 
-	@PostMapping("/add")
+	@PostMapping("/")
 	public ResponseEntity<Response> addCollaborator(@RequestBody CollaboratorDTO collaboratordto,@RequestHeader("jwt") String jwt) throws Exception
 	{
 		service.addCollaborator(collaboratordto, jwt);
 		return ResponseEntity.ok().body(new Response(200,"collaborator added",collaboratordto));
 	}
 	
-	@DeleteMapping("/delete")
+	@DeleteMapping("/")
 	public ResponseEntity<Response> deleteCollaborator(@RequestBody CollaboratorDTO collaboratordto,@RequestHeader("jwt") String jwt) throws CollaboratorNotFoundException
 	{
 		service.deleteCollaboratorImpl(collaboratordto,jwt);
 		return ResponseEntity.ok().body(new Response(200, "Successfully deleted",collaboratordto));
 	}
 	
-	@PostMapping("/noteid/{id}")
-	public ResponseEntity<Response> getCollaborator(@PathVariable("id") int id) throws CollaboratorNotFoundException, NoteNotFoundException
+	@GetMapping("/{noteid}")
+	public ResponseEntity<Response> getCollaborator(@PathVariable("noteid") int id) throws CollaboratorNotFoundException, NoteNotFoundException
 	{
 	
 		List collaborators=service.getCollaboratorByNoteId(id);

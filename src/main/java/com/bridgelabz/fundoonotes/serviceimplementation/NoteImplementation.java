@@ -162,4 +162,19 @@ public class NoteImplementation implements NoteService {
 		return alltrashdto;
 	}
 
+	@Override
+	public void emptyTheBin(String jwt) throws NoteNotFoundException 
+	{
+		UserInfo user = utility.getUser(jwt);
+		if(repository.cleanBin(user.getId())!=0)
+		{
+			return ;
+		}
+		else
+			throw new  NoteNotFoundException("your bin is clean already");
+		
+	}
+	
+	
+
 }
