@@ -1,7 +1,9 @@
 package com.bridgelabz.fundoonotes.controller;
 
+import java.io.IOException; 
 import java.util.List;
 
+import org.elasticsearch.action.delete.DeleteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
@@ -23,6 +26,7 @@ import com.bridgelabz.fundoonotes.exceptions.UserException;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.response.Response;
+import com.bridgelabz.fundoonotes.service.ElasticSearchService;
 import com.bridgelabz.fundoonotes.service.NoteService;
 import com.bridgelabz.fundoonotes.utility.Utility;
 
@@ -33,10 +37,12 @@ public class NoteController {
 	NoteService noteservice;
 	@Autowired
 	Utility utility;
+	@Autowired
+	ElasticSearchService Eservice;
 
 	@PostMapping("/new")
 	public ResponseEntity<Response> newNote(@RequestBody NoteDTO notedto, @RequestHeader("jwt") String jwt)
-			throws JWTTokenException, UserException {
+			throws JWTTokenException, Exception {
 		if (noteservice.saveNewNoteImpl(notedto, jwt)) {
 			return ResponseEntity.ok().body(new Response(200, "Note Created", notedto));
 		} else
@@ -124,12 +130,12 @@ public class NoteController {
 		return ResponseEntity.ok().body(new Response(200,"Bin cleared","username:"+utility.getUsernameFromToken(jwt)));
 	}
 	
-	@GetMapping("/{text}")
-	public ResponseEntity<Response> elasticSearch(@PathVariable String text,@RequestHeader String jwt)
+	@GetMapping("/get/{text}")
+	public ResponseEntity<Response> elasticSearch(@PathVariable String text,@RequestHeader String jwt) throws Exception
 	{
-		List<NoteDTO> notes=noteservice.getElasticNotes(text,jwt);
-		return ResponseEntity.ok().body(new Response(200,"Notes are:",notes));
 		
+		return ResponseEntity.ok().body(new Response(200,"Notes are:",Eservice.getnote(text)));
+	
 		
 	}
 	

@@ -3,9 +3,14 @@ package com.bridgelabz.fundoonotes.dto;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document; 
+import org.springframework.data.elasticsearch.annotations.Document;
 
-@Document(indexName = "notes",type = "NoteDTO",shards = 2)
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor; 
+
+@Document(indexName = "notes",type = "NoteDTO",shards = 1)
+@AllArgsConstructor
+@NoArgsConstructor
 public class NoteDTO 
 {
 	@Id
@@ -77,12 +82,14 @@ public class NoteDTO
 	public void setImages(List<String> images) {
 		this.images = images;
 	}
-	
 	@Override
 	public String toString() {
-		return "NoteDTO [title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve + ", ispinned="
-				+ ispinned + ", color=" + color + ", label=" + label + ",images=" + images + "]";
+		return "NoteDTO [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
+				+ ", ispinned=" + ispinned + ", color=" + color + ", reminder=" + reminder + ", label=" + label
+				+ ", images=" + images + "]";
 	}
+	
+	
 	
 	
 	

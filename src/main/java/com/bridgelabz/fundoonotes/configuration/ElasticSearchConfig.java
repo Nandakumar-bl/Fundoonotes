@@ -1,28 +1,27 @@
 package com.bridgelabz.fundoonotes.configuration;
 
-import java.io.IOException;
-
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
-
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.bridgelabz.fundoonotes.repository")
-public class ElasticSearchConfig 
-{
-	
-	@Bean
-	public NodeBuilder  builder() {
-		return new NodeBuilder();
-	}
+@EnableElasticsearchRepositories(basePackages = "com.bridgelabz.fundoonotes.elasticrepository")
+public class ElasticSearchConfig {
 
-	@Bean
-	public ElasticsearchOperations elasticsearchTemplate() throws IOException {
-		return new ElasticsearchTemplate(builder().local(true).node().client());	}
+	@Bean(destroyMethod = "close")
+	public RestHighLevelClient client() {
+		return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
+
+	}
+	
+
 }

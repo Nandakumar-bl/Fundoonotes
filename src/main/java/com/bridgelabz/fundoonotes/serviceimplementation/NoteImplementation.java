@@ -1,35 +1,36 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.util.ArrayList; 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.modelmapper.ModelMapper;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.common.util.concurrent.EsExecutors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
+
+import com.bridgelabz.fundoonotes.configuration.ElasticSearchConfig;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
+import com.bridgelabz.fundoonotes.elasticrepository.Elasticrepository;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
 import com.bridgelabz.fundoonotes.model.Images;
 import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
-import com.bridgelabz.fundoonotes.repository.Elasticrepository;
 import com.bridgelabz.fundoonotes.repository.NoteRepository;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
+import com.bridgelabz.fundoonotes.service.ElasticSearchService;
 import com.bridgelabz.fundoonotes.service.NoteService;
 import com.bridgelabz.fundoonotes.utility.Utility;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
@@ -37,18 +38,17 @@ import ch.qos.logback.core.joran.util.beans.BeanUtil;
 public class NoteImplementation implements NoteService {
 	NoteRepository repository;
 	Utility utility;
-	Elasticrepository elasticrepo;
 	@Autowired
-	private ElasticsearchTemplate template;
+	ElasticSearchService Eservice;
 
 	@Autowired
-	public NoteImplementation(NoteRepository repository, Utility utility,Elasticrepository elasticrepo) {
+	public NoteImplementation(NoteRepository repository, Utility utility) {
 		this.repository = repository;
 		this.utility = utility;
-		this.elasticrepo=elasticrepo;
+
 	}
 
-	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws JWTTokenException, UserException {
+	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws JWTTokenException, Exception {
 
 		UserInfo user = utility.getUser(jwt);
 		if (user != null) {
@@ -63,6 +63,8 @@ public class NoteImplementation implements NoteService {
 			Notes notes = new Notes(notedto.getTitle(), notedto.getTakeanote(), notedto.getReminder(),
 					notedto.getColor(), labels, images, user);
 			repository.save(notes);
+			notedto.setId(notesid);
+			Eservice.newNote(notedto);
 			return true;
 
 		} else {
@@ -92,6 +94,7 @@ public class NoteImplementation implements NoteService {
 
 	public void deleteNoteImpl(int id, String jwt) throws JWTTokenException, NoteNotFoundException {
 		UserInfo user = utility.getUser(jwt);
+		Eservice.deleteNote(id);
 		if (utility.validateToken(jwt) && user != null) {
 			if (repository.deleteByNoteid(id) == null)
 				throw new NoteNotFoundException("No Note available with this ID");
@@ -100,7 +103,7 @@ public class NoteImplementation implements NoteService {
 		}
 	}
 
-	public boolean updateNoteImpl(UpdateNoteDTO updatedto, String jwt) throws NoteNotFoundException, JWTTokenException {
+	public boolean updateNoteImpl(UpdateNoteDTO updatedto, String jwt) throws JsonProcessingException, Exception {
 		if (utility.validateToken(jwt)) {
 			List<Label> labels = getLabelsImpl(updatedto.getLabel(), jwt);
 			List<Images> images = getImagesImpl(updatedto.getImages(), updatedto.getId());
@@ -110,6 +113,9 @@ public class NoteImplementation implements NoteService {
 			System.out.println(note);
 			Notes notes = utility.getUpdatedNote(updatedto, note, images, labels);
 			repository.save(notes);
+			NoteDTO notedt=new NoteDTO();
+			BeanUtils.copyProperties(updatedto, notedt);
+			Eservice.updateNote(notedt);
 			return true;
 		} else
 			throw new JWTTokenException("Problem with your Token");
@@ -174,30 +180,32 @@ public class NoteImplementation implements NoteService {
 	}
 
 	@Override
-	public void emptyTheBin(String jwt) throws NoteNotFoundException 
-	{
+	public void emptyTheBin(String jwt) throws NoteNotFoundException {
 		UserInfo user = utility.getUser(jwt);
-		if(repository.cleanBin(user.getId())!=0)
-		{
-			return ;
-		}
-		else
-			throw new  NoteNotFoundException("your bin is clean already");
-		
-	}
-	
-	public List<NoteDTO> getElasticNotes(String text,String jwt)
-	{
-		List<NoteDTO> notes=getAllNoteImpl(jwt);
-		notes.stream().map(note->elasticrepo.save(note));
-		String search = ".*" + text + ".*";
-		SearchQuery searchQuery = new NativeSearchQueryBuilder()
-				.withFilter(QueryBuilders.regexpQuery("firstname", search)).build();
-		List<NoteDTO> noteselastic = template.queryForList(searchQuery, NoteDTO.class);
+		if (repository.cleanBin(user.getId()) != 0) {
+			return;
+		} else
+			throw new NoteNotFoundException("your bin is clean already");
 
-	        return noteselastic;
 	}
-	
-	
+
+	/*
+	 * public Object getElasticNotes(String text, String jwt) throws IOException {
+	 * 
+	 * List<NoteDTO> notes = getAllNoteImpl(jwt);
+	 * 
+	 * notes.forEach(s->{ Map dataMap = objectMapper.convertValue(s, Map.class);
+	 * System.out.println(s); IndexRequest indexRequest = new IndexRequest("fundoo",
+	 * "notedto", s.getId() + "").source(dataMap); try { IndexResponse response =
+	 * client.client().index(indexRequest); } catch (IOException e) {
+	 * e.printStackTrace(); }
+	 * 
+	 * 
+	 * 
+	 * 
+	 * }); return null;
+	 * 
+	 * }
+	 */
 
 }
