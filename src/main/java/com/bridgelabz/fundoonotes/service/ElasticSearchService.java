@@ -1,6 +1,7 @@
 package com.bridgelabz.fundoonotes.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
@@ -16,6 +17,10 @@ public interface ElasticSearchService
 	
 	public void deleteNote(int id);
 	
-	public Object getnote(String id) throws IOException;
+	public Map getnote(String id) throws IOException;
+	
+	public List<NoteDTO> getMatchedNote(String text) throws Exception ;
+	
+	public List<NoteDTO> getAllNotes() throws IOException;
 	
 }

@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.repository;
 
-import java.util.List; 
+import java.util.List;  
 
 import javax.transaction.Transactional;
 
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import com.bridgelabz.fundoonotes.model.Images;
-import com.bridgelabz.fundoonotes.model.Label;
+import com.bridgelabz.fundoonotes.model.Labels;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 
@@ -25,13 +25,13 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query("from UserInfo where id=?1")
 	UserInfo findUserById(int id);
 	
-	@Query("from Label where label=?1")
-	Label findLabelByName(String label);
+	@Query("from Labels where label=?1")
+	Labels findLabelByName(String label);
 	
-	@Query("from Label where label=?1")
-	Label getLabel(String label);
+	@Query("from Labels where label=?1")
+	Labels getLabel(String label);
 	
-	@Query(value = "insert into label(label,userinfo_id) values(:newlabel,:user)", nativeQuery = true)
+	@Query(value = "insert into labels(label,userinfo_id) values(:newlabel,:user)", nativeQuery = true)
 	@Modifying
 	Integer createLabel(String newlabel,UserInfo user);
 	

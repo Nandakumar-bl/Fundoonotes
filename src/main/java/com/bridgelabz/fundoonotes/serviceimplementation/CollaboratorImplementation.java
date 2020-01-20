@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.util.List;
+import java.util.List; 
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -13,7 +13,6 @@ import com.bridgelabz.fundoonotes.exceptions.EmailAlreadyExsist;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
 import com.bridgelabz.fundoonotes.model.Collaborator;
-import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.CollaboratorRepository;

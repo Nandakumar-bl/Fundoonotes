@@ -1,6 +1,8 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.io.IOException;
+import java.io.IOException; 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -8,8 +10,10 @@ import java.util.stream.Collectors;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.util.concurrent.EsExecutors;
+import org.elasticsearch.search.SearchHits;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,22 +21,21 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.configuration.ElasticSearchConfig;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
-import com.bridgelabz.fundoonotes.elasticrepository.Elasticrepository;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
 import com.bridgelabz.fundoonotes.model.Images;
-import com.bridgelabz.fundoonotes.model.Label;
+import com.bridgelabz.fundoonotes.model.Labels;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.NoteRepository;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.service.ElasticSearchService;
 import com.bridgelabz.fundoonotes.service.NoteService;
+import com.bridgelabz.fundoonotes.utility.SortbyID;
 import com.bridgelabz.fundoonotes.utility.Utility;
+import com.bridgelabz.fundoonotes.utility.sortbyDate;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ch.qos.logback.core.joran.util.beans.BeanUtil;
 
 @Service
 public class NoteImplementation implements NoteService {
@@ -40,6 +43,8 @@ public class NoteImplementation implements NoteService {
 	Utility utility;
 	@Autowired
 	ElasticSearchService Eservice;
+	
+	int i=0;
 
 	@Autowired
 	public NoteImplementation(NoteRepository repository, Utility utility) {
@@ -51,6 +56,8 @@ public class NoteImplementation implements NoteService {
 	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws JWTTokenException, Exception {
 
 		UserInfo user = utility.getUser(jwt);
+		List<Labels> labels = new ArrayList<Labels>();
+		List<Images> images = new ArrayList<Images>();
 		if (user != null) {
 			int notesid;
 			try {
@@ -58,10 +65,17 @@ public class NoteImplementation implements NoteService {
 			} catch (NullPointerException e) {
 				notesid = 1;
 			}
-			List<Label> labels = getLabelsImpl(notedto.getLabel(), jwt);
-			List<Images> images = getImagesImpl(notedto.getImages(), notesid);
+			if (notedto.getLabels() != null)
+				labels = getLabelsImpl(notedto.getLabels(), jwt);
+			else
+				labels = null;
+			if (notedto.getImages() != null)
+				images = getImagesImpl(notedto.getImages(), notesid);
+			else
+				images = null;
 			Notes notes = new Notes(notedto.getTitle(), notedto.getTakeanote(), notedto.getReminder(),
 					notedto.getColor(), labels, images, user);
+			System.out.println(notes);
 			repository.save(notes);
 			notedto.setId(notesid);
 			Eservice.newNote(notedto);
@@ -79,7 +93,7 @@ public class NoteImplementation implements NoteService {
 		return images;
 	}
 
-	public List<Label> getLabelsImpl(List<String> dtolabels, String jwt) {
+	public List<Labels> getLabelsImpl(List<String> dtolabels, String jwt) {
 		int size = dtolabels.size();
 		UserInfo user = utility.getUser(jwt);
 		for (int i = 0; i < size; i++) {
@@ -87,7 +101,7 @@ public class NoteImplementation implements NoteService {
 				repository.createLabel(dtolabels.get(i), user);
 			}
 		}
-		List<Label> labels = dtolabels.stream().map(s -> repository.findLabelByName(s)).collect(Collectors.toList());
+		List<Labels> labels = dtolabels.stream().map(s -> repository.findLabelByName(s)).collect(Collectors.toList());
 
 		return labels;
 	}
@@ -105,7 +119,7 @@ public class NoteImplementation implements NoteService {
 
 	public boolean updateNoteImpl(UpdateNoteDTO updatedto, String jwt) throws JsonProcessingException, Exception {
 		if (utility.validateToken(jwt)) {
-			List<Label> labels = getLabelsImpl(updatedto.getLabel(), jwt);
+			List<Labels> labels = getLabelsImpl(updatedto.getLabels(), jwt);
 			List<Images> images = getImagesImpl(updatedto.getImages(), updatedto.getId());
 			Notes note = repository.getNotes(updatedto.getId());
 			if (note == null)
@@ -113,7 +127,7 @@ public class NoteImplementation implements NoteService {
 			System.out.println(note);
 			Notes notes = utility.getUpdatedNote(updatedto, note, images, labels);
 			repository.save(notes);
-			NoteDTO notedt=new NoteDTO();
+			NoteDTO notedt = new NoteDTO();
 			BeanUtils.copyProperties(updatedto, notedt);
 			Eservice.updateNote(notedt);
 			return true;
@@ -188,24 +202,25 @@ public class NoteImplementation implements NoteService {
 			throw new NoteNotFoundException("your bin is clean already");
 
 	}
+	
 
-	/*
-	 * public Object getElasticNotes(String text, String jwt) throws IOException {
-	 * 
-	 * List<NoteDTO> notes = getAllNoteImpl(jwt);
-	 * 
-	 * notes.forEach(s->{ Map dataMap = objectMapper.convertValue(s, Map.class);
-	 * System.out.println(s); IndexRequest indexRequest = new IndexRequest("fundoo",
-	 * "notedto", s.getId() + "").source(dataMap); try { IndexResponse response =
-	 * client.client().index(indexRequest); } catch (IOException e) {
-	 * e.printStackTrace(); }
-	 * 
-	 * 
-	 * 
-	 * 
-	 * }); return null;
-	 * 
-	 * }
-	 */
+	public NoteDTO[] sortedNotes(String jwt) {
+		UserInfo user = utility.getUser(jwt);
 
+		List<Notes> allnotes = repository.getAllNotes(user.getId());
+		List<NoteDTO> allnotedto = allnotes.stream().map(s -> {
+			NoteDTO temp = new NoteDTO();
+			BeanUtils.copyProperties(s, temp);
+			return temp;
+		}).collect(Collectors.toList());
+		NoteDTO[] dtos = new NoteDTO[allnotedto.size()];
+		allnotedto.forEach(s -> {
+			dtos[i] = s;
+			i++;
+		});
+		Arrays.sort(dtos, new SortbyID());
+		return dtos;
+	}
+
+	
 }

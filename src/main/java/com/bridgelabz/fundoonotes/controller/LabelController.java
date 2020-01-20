@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.controller;
 
-import java.util.List;
+import java.util.List; 
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,6 @@ import com.bridgelabz.fundoonotes.exceptions.LabelAlreadyExsistException;
 import com.bridgelabz.fundoonotes.exceptions.LabelNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.LabelUpdatingException;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
-import com.bridgelabz.fundoonotes.model.Label;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.service.LabelService;

@@ -130,13 +130,26 @@ public class NoteController {
 		return ResponseEntity.ok().body(new Response(200,"Bin cleared","username:"+utility.getUsernameFromToken(jwt)));
 	}
 	
-	@GetMapping("/get/{text}")
-	public ResponseEntity<Response> elasticSearch(@PathVariable String text,@RequestHeader String jwt) throws Exception
-	{
-		
-		return ResponseEntity.ok().body(new Response(200,"Notes are:",Eservice.getnote(text)));
-	
-		
+	@GetMapping("/elastictitle/{text}")
+	public ResponseEntity<Response> elasticSearch(@PathVariable String text, @RequestHeader String jwt)
+			throws Exception {
+
+		Object notes = Eservice.getAllNotes();
+		if (notes != null)
+			return ResponseEntity.ok().body(new Response(200, "Notes are:",notes));
+		else
+			throw new NoteNotFoundException("no note available");
+	}
+
+	@GetMapping("/sorted")
+	public Object sortedNote(@RequestHeader("jwt") String jwt) throws Exception {
+
+		NoteDTO[] sortedNotes=noteservice.sortedNotes(jwt);
+		if (sortedNotes != null)
+			return ResponseEntity.ok().body(new Response(200, "sorted Notes are:", sortedNotes));
+		else
+			throw new NoteNotFoundException("no note available");
+
 	}
 	
 	

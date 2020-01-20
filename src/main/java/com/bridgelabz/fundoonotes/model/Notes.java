@@ -35,7 +35,7 @@ public class Notes {
     @LastModifiedDate
     private Date lastupdate;
 	@ManyToMany
-	private List<Label> label;
+	private List<Labels> labels;
 	@OneToMany(mappedBy = "notes")
 	private List<Images> images;
 	@Column(columnDefinition = "timestamp default current_timestamp")
@@ -50,25 +50,25 @@ public class Notes {
 	public Notes() {}
 	
 
-	public Notes(int id,String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images) 
+	public Notes(int id,String title, String takeanote,String reminder, String color, List<Labels> labels, List<Images> images) 
 	{
 		this.id=id;
 		this.title = title;
 		this.takeanote = takeanote;
 		this.reminder = reminder;
 		this.color = color;
-		this.label = label;
+		this.labels = labels;
 		this.images = images;
 		
 	}
 	
-	public Notes(String title, String takeanote,String reminder, String color, List<Label> label, List<Images> images,UserInfo userinfo) 
+	public Notes(String title, String takeanote,String reminder, String color, List<Labels> labels, List<Images> images,UserInfo userinfo) 
 	{
 		this.title = title;
 		this.takeanote = takeanote;
 		this.reminder = reminder;
 		this.color = color;
-		this.label = label;
+		this.labels = labels;
 		this.images = images;
 		this.userinfo=userinfo;
 	}
@@ -141,13 +141,16 @@ public class Notes {
 		CreatedTime = createdTime;
 	}
 
-	@JsonIgnore
-	public List<Label> getLabel() {
-		return label;
+
+
+
+	public List<Labels> getLabels() {
+		return labels;
 	}
 
-	public void setLabel(List<Label> label) {
-		this.label = label;
+
+	public void setLabels(List<Labels> labels) {
+		this.labels = labels;
 	}
 
 
@@ -204,7 +207,7 @@ public class Notes {
 	public String toString() {
 		return "Notes [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
 				+ ", istrash=" + istrash + ", ispinned=" + ispinned + ", reminder=" + reminder + ", color=" + color
-				+ ", label=" + label + ", images=" + images + ", CreatedTime=" + CreatedTime + ", userinfo=S]";
+				+ ", label=" + labels + ", images=" + images + ", CreatedTime=" + CreatedTime + ", userinfo=S]";
 	}
 
 	

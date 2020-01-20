@@ -1,17 +1,21 @@
 package com.bridgelabz.fundoonotes.dto;
 
+import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor; 
 
-@Document(indexName = "notes",type = "NoteDTO",shards = 1)
+@Document(indexName = "fundoo",type = "notedto")
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoteDTO 
+public class NoteDTO
 {
 	@Id
 	private int id;
@@ -21,8 +25,11 @@ public class NoteDTO
 	private boolean ispinned;
 	private String color; 
 	private String reminder;
-	private List<String> label;
+	private List<String> labels;
 	private List<String> images;
+	private Date CreatedTime;
+	
+	
 	
 	
 	
@@ -69,11 +76,11 @@ public class NoteDTO
 	public void setReminder(String reminder) {
 		this.reminder = reminder;
 	}
-	public List<String> getLabel() {
-		return label;
+	public List<String> getLabels() {
+		return labels;
 	}
-	public void setLabel(List<String> label) {
-		this.label = label;
+	public void setLabels(List<String> labels) {
+		this.labels = labels;
 	}
 	
 	public List<String> getImages() {
@@ -82,11 +89,18 @@ public class NoteDTO
 	public void setImages(List<String> images) {
 		this.images = images;
 	}
+
 	@Override
 	public String toString() {
 		return "NoteDTO [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
-				+ ", ispinned=" + ispinned + ", color=" + color + ", reminder=" + reminder + ", label=" + label
-				+ ", images=" + images + "]";
+				+ ", ispinned=" + ispinned + ", color=" + color + ", reminder=" + reminder + ", labels=" + labels
+				+ ", images=" + images + ", date=" + CreatedTime + "]";
+	}
+	public Date getCreatedTime() {
+		return CreatedTime;
+	}
+	public void setCreatedTime(Date createdTime) {
+		CreatedTime = createdTime;
 	}
 	
 	

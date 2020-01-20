@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "com.bridgelabz.fundoonotes.elasticrepository")
 public class ElasticSearchConfig {
 
 	@Bean(destroyMethod = "close")
@@ -22,6 +21,4 @@ public class ElasticSearchConfig {
 		return new RestHighLevelClient(RestClient.builder(new HttpHost("localhost", 9200, "http")));
 
 	}
-	
-
 }

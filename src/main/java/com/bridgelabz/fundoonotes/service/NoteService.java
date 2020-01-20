@@ -32,6 +32,8 @@ public interface NoteService {
 
 	public void emptyTheBin(String jwt) throws NoteNotFoundException;
 	
+	public NoteDTO[] sortedNotes(String jwt) ;
+	
 
 
 }

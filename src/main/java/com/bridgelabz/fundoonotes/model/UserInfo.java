@@ -54,7 +54,7 @@ public class UserInfo implements Serializable
 	private List<Notes> notes;
 	@JsonIgnore
 	@OneToMany(mappedBy = "userinfo")
-	private List<Label> labels;
+	private List<Labels> labels;
 	
 		
 	

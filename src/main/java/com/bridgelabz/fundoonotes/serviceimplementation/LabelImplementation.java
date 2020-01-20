@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.util.List;
+import java.util.List; 
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.dto.LabelDTO;
 import com.bridgelabz.fundoonotes.exceptions.LabelAlreadyExsistException;
 import com.bridgelabz.fundoonotes.exceptions.LabelNotFoundException;
-import com.bridgelabz.fundoonotes.model.Label;
+import com.bridgelabz.fundoonotes.model.Labels;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.LabelRepository;
@@ -75,7 +75,7 @@ public class LabelImplementation implements LabelService {
 	
 	public LabelDTO getLabel(int id)
 	{
-		Label label=repository.getLabel(id);
+		Labels label=repository.getLabel(id);
 		LabelDTO labeldto=new LabelDTO();
 		BeanUtils.copyProperties(label, labeldto);
 		return labeldto;
@@ -86,7 +86,7 @@ public class LabelImplementation implements LabelService {
 	public List<LabelDTO> getAllUserLabels(String jwt)
 	{
 		UserInfo user=utility.getUser(jwt);
-		List<Label> labels=repository.getAllUserLabel(user.getId());
+		List<Labels> labels=repository.getAllUserLabel(user.getId());
 		List<LabelDTO> labeldtouser=labels.stream().map(s->
 				{
 					LabelDTO temp=new LabelDTO();
@@ -99,7 +99,7 @@ public class LabelImplementation implements LabelService {
 	public List<LabelDTO> findbynoteid(int id)
 	{
 		Notes note=repository.findbynoteid(id);
-		List<Label> labels=note.getLabel();
+		List<Labels> labels=note.getLabels();
 		List<LabelDTO> noteslabel=labels.stream().map(s->
 		{
 			LabelDTO temp=new LabelDTO();

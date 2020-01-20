@@ -12,7 +12,7 @@ public class UpdateNoteDTO
 	private boolean istrash;
 	private String color; 
 	private String reminder;
-	private List<String> label;
+	private List<String> labels;
 	private List<String> images;
 	
 	
@@ -67,11 +67,11 @@ public class UpdateNoteDTO
 	public void setReminder(String reminder) {
 		this.reminder = reminder;
 	}
-	public List<String> getLabel() {
-		return label;
+	public List<String> getLabels() {
+		return labels;
 	}
-	public void setLabel(List<String> label) {
-		this.label = label;
+	public void setLabel(List<String> labels) {
+		this.labels = labels;
 	}
 	
 	public List<String> getImages() {
@@ -84,7 +84,7 @@ public class UpdateNoteDTO
 	@Override
 	public String toString() {
 		return "NoteDTO [title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve + ", ispinned="
-				+ ispinned + ", color=" + color + ", label=" + label + ",images=" + images + "]";
+				+ ispinned + ", color=" + color + ", label=" + labels + ",images=" + images + "]";
 	}
 	
 	

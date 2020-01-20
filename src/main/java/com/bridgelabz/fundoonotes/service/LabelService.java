@@ -1,11 +1,10 @@
 package com.bridgelabz.fundoonotes.service;
 
-import java.util.List;
+import java.util.List; 
 
 import com.bridgelabz.fundoonotes.dto.LabelDTO; 
 import com.bridgelabz.fundoonotes.exceptions.LabelAlreadyExsistException;
 import com.bridgelabz.fundoonotes.exceptions.LabelNotFoundException;
-import com.bridgelabz.fundoonotes.model.Label;
 
 public interface LabelService 
 {

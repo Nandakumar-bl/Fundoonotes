@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.filter;
 
-import java.io.IOException;      
+import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -21,47 +21,43 @@ import lombok.SneakyThrows;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-	
+
 	@Autowired
 	Utility utility;
 
 	@Autowired
 	UserImplementation userimp;
-	
 
 	@Override
 	@SneakyThrows
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String header = request.getHeader("jwt");
-		
-		String username=null;
-		String jwt=null;		
-		
-		if (header != null) 
-		{
-			jwt=header;
+
+		String username = null;
+		String jwt = null;
+
+		if (header != null) {
+			jwt = header;
 			username = utility.getUsernameFromToken(jwt);
 		}
-		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) 
-		{
-			UserDetails userdetails=userimp.loadUserByUsername(username);
-			if(utility.validateToken(jwt))
-			{
-				UsernamePasswordAuthenticationToken upat=new UsernamePasswordAuthenticationToken(
-				userdetails,null,userdetails.getAuthorities());
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+			UserDetails userdetails = userimp.loadUserByUsername(username);
+			if (utility.validateToken(jwt)) {
+				UsernamePasswordAuthenticationToken upat = new UsernamePasswordAuthenticationToken(userdetails, null,
+						userdetails.getAuthorities());
 				upat.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				SecurityContextHolder.getContext().setAuthentication(upat);
-				utility.getUser(header);
-			}
-			else
-			{
+				if (utility.validateToken(jwt))
+					utility.getUser(header);
+				else
+					utility.cache(jwt);
+			} else {
 				throw new JWTTokenException("Token is not valid");
 			}
-		
+
 		}
 		filterChain.doFilter(request, response);
-		
-		
+
 	}
 }
