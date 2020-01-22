@@ -23,8 +23,8 @@ import com.bridgelabz.fundoonotes.utility.Utility;
 public class CollaboratorImplementation implements CollaboratorService
 {
 
-	CollaboratorRepository repository;
-	Utility utility;
+	private CollaboratorRepository repository;
+	private Utility utility;
 	
 	@Autowired
 	public CollaboratorImplementation(CollaboratorRepository repository, Utility utility) 

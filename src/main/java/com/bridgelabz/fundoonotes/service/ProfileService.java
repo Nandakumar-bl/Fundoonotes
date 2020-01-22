@@ -10,9 +10,9 @@ import com.bridgelabz.fundoonotes.exceptions.NoProfileFoundException;
 
 public interface ProfileService {
 	
-	public void UploadPicturePic(MultipartFile file,String jwt) throws IOException, FileFormatException;
-	public void EditProfilePic(MultipartFile file,String jwt) throws IOException, FileFormatException;
-	public void deleteProfilePic(String jwt) throws NoProfileFoundException;
-	public S3Object retrieveProfile(String jwt);
+	void UploadPicturePic(MultipartFile file,String jwt) throws IOException, FileFormatException;
+	void EditProfilePic(MultipartFile file,String jwt) throws IOException, FileFormatException;
+	void deleteProfilePic(String jwt) throws NoProfileFoundException;
+	S3Object retrieveProfile(String jwt);
 
 }

@@ -131,10 +131,7 @@ public class Utility {
    
 	public void MailDetails(String email)
 	{
-		System.out.println(email);
-		System.out.println(userRepository);
 		UserInfo user=userRepository.findByEmail(email);
-		System.out.println(user);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
 		String url="http://localhost:8083/user/verifyemail/"+jwt;
 		sendMail(email,"verifying email",url);

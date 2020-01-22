@@ -21,9 +21,9 @@ import com.bridgelabz.fundoonotes.utility.Utility;
 public class LabelImplementation implements LabelService {
 
 	@Autowired
-	LabelRepository repository;
+	private LabelRepository repository;
 	@Autowired
-	Utility utility;
+	private Utility utility;
 
 	@Override
 	public String createLabel(LabelDTO labeldto, String jwt) throws LabelAlreadyExsistException {

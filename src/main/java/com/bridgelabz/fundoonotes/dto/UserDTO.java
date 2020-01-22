@@ -28,6 +28,19 @@ public class UserDTO
 	private String passwordagain;
 	
 	
+	
+	
+	public UserDTO(@NotNull(message = "username cannot be empty") String username,
+			@NotNull(message = "Firstname cannot be empty") String firstname,
+			@NotNull(message = "lastname cannot be empty") String lastname,
+			@NotNull(message = "email cannot be empty") @Pattern(regexp = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]{2,4}$", message = "give an valid email") String email,
+			@NotNull(message = "password cannot be empty") @Size(min = 8, max = 20) String password) {
+		this.username = username;
+		Firstname = firstname;
+		Lastname = lastname;
+		this.email = email;
+		this.password = password;
+	}
 	public String getUsername() {
 		return username;
 	}

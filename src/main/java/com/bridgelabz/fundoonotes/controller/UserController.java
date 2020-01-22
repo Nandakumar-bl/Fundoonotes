@@ -21,6 +21,7 @@ import com.bridgelabz.fundoonotes.dto.PasswordDTO;
 import com.bridgelabz.fundoonotes.dto.UserDTO;
 import com.bridgelabz.fundoonotes.exceptions.LoginException;
 import com.bridgelabz.fundoonotes.exceptions.MailIDNotFoundException;
+import com.bridgelabz.fundoonotes.exceptions.UserException;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.response.Response;
 import com.bridgelabz.fundoonotes.service.UserService;
@@ -32,13 +33,13 @@ public class UserController {
 	@Autowired
 	private UserService service;
 	@Autowired
-	Utility utility;
+	private Utility utility;
 	
 	
 
 	
 	@PostMapping("/register")
-	public ResponseEntity<Response> registration(@Valid @RequestBody UserDTO userdto, BindingResult bindingresult) {
+	public ResponseEntity<Response> registration(@Valid @RequestBody UserDTO userdto, BindingResult bindingresult) throws UserException {
 	
 		if (bindingresult.hasErrors() || !userdto.getPassword().equals(userdto.getPasswordagain())) 
 		{

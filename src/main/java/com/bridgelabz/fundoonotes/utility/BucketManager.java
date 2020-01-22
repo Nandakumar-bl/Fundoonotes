@@ -41,39 +41,44 @@ public class BucketManager {
 		this.s3client = new AmazonS3Client(credentials);
 	}
 	
-	public void Uploader( MultipartFile multipartFile,String jwt) throws IOException
+	public void uploader( MultipartFile multipartFile,String jwt) throws IOException
 	{
 		
 		File file = convertMultiPartToFile(multipartFile);
 		s3client.putObject(new PutObjectRequest(bucketName,multipartFile.getOriginalFilename(), file));
 		
 	}
-	public void UpdatePic(String filetodelete, MultipartFile multipartFile,String jwt) throws IOException
+	public void updatePic(String filetodelete, MultipartFile multipartFile,String jwt) throws IOException
 	{
 		
 		File file = convertMultiPartToFile(multipartFile);
-		s3client.deleteObject(new DeleteObjectRequest("fundoonotes-bl",filetodelete));
+		s3client.deleteObject(new DeleteObjectRequest(bucketName,filetodelete));
 		s3client.putObject(new PutObjectRequest(bucketName,multipartFile.getOriginalFilename(), file));
 		
 	}
 	
 	
-	public void Trasher(String filename)
+	public void trasher(String filename)
 	{
-		s3client.deleteObject(new DeleteObjectRequest("fundoonotes-bl",filename));
+		s3client.deleteObject(new DeleteObjectRequest(bucketName,filename));
 	}
 	
 	public S3Object myProfilePic(String file)
 	{
-		 return s3client.getObject(new GetObjectRequest("fundoonotes-bl",file));
+		 return s3client.getObject(new GetObjectRequest(bucketName,file));
 	}
 	
 	
 	private File convertMultiPartToFile(MultipartFile file) throws IOException {
 	    File convFile = new File(file.getOriginalFilename());
+	    try {
 	    FileOutputStream fos = new FileOutputStream(convFile);
 	    fos.write(file.getBytes());
-	    fos.close();
+	    }
+	    catch(Exception e)
+	    {
+	    	e.printStackTrace();
+	    }
 	    return convFile;
 	}
 

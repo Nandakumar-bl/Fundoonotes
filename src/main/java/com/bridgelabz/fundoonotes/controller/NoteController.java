@@ -1,9 +1,8 @@
 package com.bridgelabz.fundoonotes.controller;
 
-import java.io.IOException; 
+import java.io.IOException;
 import java.util.List;
 
-import org.elasticsearch.action.delete.DeleteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,21 +33,21 @@ import com.bridgelabz.fundoonotes.utility.Utility;
 @RequestMapping("/note")
 public class NoteController {
 	@Autowired
-	NoteService noteservice;
+	private NoteService noteservice;
 	@Autowired
-	Utility utility;
+	private Utility utility;
 	@Autowired
-	ElasticSearchService Eservice;
+	private ElasticSearchService Eservice;
 
 	@PostMapping("/new")
 	public ResponseEntity<Response> newNote(@RequestBody NoteDTO notedto, @RequestHeader("jwt") String jwt)
 			throws JWTTokenException, Exception {
 		if (noteservice.saveNewNoteImpl(notedto, jwt)) {
 			return ResponseEntity.ok().body(new Response(200, "Note Created", notedto));
-		} else
+		} else {
 			return ResponseEntity.badRequest().body(new Response(400, "problem in creating note", notedto));
+		}
 	}
-
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Response> deleteNote(@PathVariable int id, @RequestHeader("jwt") String jwt)
 			throws JWTTokenException, NoteNotFoundException {
@@ -107,7 +106,7 @@ public class NoteController {
 	{
 		List<NoteDTO> notes=noteservice.getAllPinnedImpl(jwt);
 		if(notes!=null)
-			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",notes));
+			return ResponseEntity.ok().body(new Response(200, "Pinned Notes",notes));
 		else
 			throw new NoteNotFoundException("No Pinned notes available");
 			
@@ -118,7 +117,7 @@ public class NoteController {
 	{
 		List<NoteDTO> notes=noteservice.getAllTrashNotesImpl(jwt);
 		if(notes!=null)
-			return ResponseEntity.ok().body(new Response(200, "Archieve Notes",notes));
+			return ResponseEntity.ok().body(new Response(200, "Trashed Notes",notes));
 		else
 			throw new NoteNotFoundException("No trash notes available");		
 	}
@@ -131,10 +130,10 @@ public class NoteController {
 	}
 	
 	@GetMapping("/elastictitle/{text}")
-	public ResponseEntity<Response> elasticSearch(@PathVariable String text, @RequestHeader String jwt)
-			throws Exception {
+	public ResponseEntity<Response> elasticSearch(@PathVariable String text, @RequestHeader String jwt) throws IOException, NoteNotFoundException
+			 {
 
-		Object notes = Eservice.getAllNotes();
+		Object notes = Eservice.getMatchedNote(text);
 		if (notes != null)
 			return ResponseEntity.ok().body(new Response(200, "Notes are:",notes));
 		else
@@ -142,7 +141,7 @@ public class NoteController {
 	}
 
 	@GetMapping("/sorted")
-	public Object sortedNote(@RequestHeader("jwt") String jwt) throws Exception {
+	public Object sortedNote(@RequestHeader("jwt") String jwt) throws NoteNotFoundException  {
 
 		NoteDTO[] sortedNotes=noteservice.sortedNotes(jwt);
 		if (sortedNotes != null)

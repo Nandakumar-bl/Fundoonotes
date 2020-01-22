@@ -19,17 +19,17 @@ import com.bridgelabz.fundoonotes.utility.Utility;
 public class ProfilePicImplementation implements ProfileService {
 
 	@Autowired
-	BucketManager bucketManager;
+	private BucketManager bucketManager;
 	@Autowired
-	Utility utility;
+	private Utility utility;
 	@Autowired
-	UserRepository repository;
+	private UserRepository repository;
 
 	public void UploadPicturePic(MultipartFile file, String jwt) throws IOException, FileFormatException {
 		UserInfo user = utility.getUser(jwt);
 		if (utility.checkImage(file.getOriginalFilename())) {
 			repository.insertProfile(file.getOriginalFilename(), user.getId());
-			bucketManager.Uploader(file, jwt);
+			bucketManager.uploader(file, jwt);
 		} else
 			throw new FileFormatException("Format of Image is not supported");
 
@@ -41,7 +41,7 @@ public class ProfilePicImplementation implements ProfileService {
 			UserInfo user = utility.getUser(jwt);
 			String filetodelete = repository.getProfile(user.getId());
 			repository.updateProfile(file.getOriginalFilename(), user.getId());
-			bucketManager.UpdatePic(filetodelete, file, jwt);
+			bucketManager.updatePic(filetodelete, file, jwt);
 		} else
 			throw new FileFormatException("Format of Image is not supported");
 	}
@@ -49,7 +49,7 @@ public class ProfilePicImplementation implements ProfileService {
 	public void deleteProfilePic(String jwt) throws NoProfileFoundException {
 		UserInfo user = utility.getUser(jwt);
 		if (repository.getProfile(user.getId()) != null) {
-			bucketManager.Trasher(repository.getProfile(user.getId()));
+			bucketManager.trasher(repository.getProfile(user.getId()));
 			repository.deleteProfile(user.getId());
 		}
 		else

@@ -39,7 +39,6 @@ public class UserInfo implements Serializable
 	@NotNull
 	private String Lastname;
 	@NotNull
-	@Pattern(regexp = "	^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$",message = "Enter a valid email")
 	private String email;
 	@NotNull
 	@Column(columnDefinition = "boolean default false")
@@ -55,6 +54,7 @@ public class UserInfo implements Serializable
 	@JsonIgnore
 	@OneToMany(mappedBy = "userinfo")
 	private List<Labels> labels;
+	
 	
 		
 	

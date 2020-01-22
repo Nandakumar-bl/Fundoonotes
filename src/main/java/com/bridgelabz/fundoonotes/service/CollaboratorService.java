@@ -9,10 +9,10 @@ import com.bridgelabz.fundoonotes.model.Collaborator;
 
 public interface CollaboratorService {
 	
-	public void addCollaborator(CollaboratorDTO collaboratordto, String jwt) throws Exception;
+	void addCollaborator(CollaboratorDTO collaboratordto, String jwt) throws Exception;
 	
-	public void deleteCollaboratorImpl(CollaboratorDTO collaboratordto, String jwt) throws CollaboratorNotFoundException;
+	void deleteCollaboratorImpl(CollaboratorDTO collaboratordto, String jwt) throws CollaboratorNotFoundException;
 
-	public List<CollaboratorDTO> getCollaboratorByNoteId(int noteid) throws CollaboratorNotFoundException, NoteNotFoundException;
+	List<CollaboratorDTO> getCollaboratorByNoteId(int noteid) throws CollaboratorNotFoundException, NoteNotFoundException;
 	
 }

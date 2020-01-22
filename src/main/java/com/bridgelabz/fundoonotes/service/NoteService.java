@@ -14,25 +14,25 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface NoteService {
 	
-	public boolean saveNewNoteImpl(NoteDTO notedto,String jwt) throws JWTTokenException, UserException, Exception;
+	boolean saveNewNoteImpl(NoteDTO notedto,String jwt) throws JWTTokenException, UserException, Exception;
 
-	public void deleteNoteImpl(int id,String jwt) throws JWTTokenException, NoteNotFoundException;
+	void deleteNoteImpl(int id,String jwt) throws JWTTokenException, NoteNotFoundException;
 	
-	public boolean updateNoteImpl(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException, JsonProcessingException, Exception;
+	boolean updateNoteImpl(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException, JsonProcessingException, Exception;
 	
-	public NoteDTO getNoteImpl(int id) throws NoteNotFoundException;
+	NoteDTO getNoteImpl(int id) throws NoteNotFoundException;
 
-	public List<NoteDTO> getAllNoteImpl(String jwt);
+	List<NoteDTO> getAllNoteImpl(String jwt);
 	
-	public List<NoteDTO> getAllArchieveImpl(String jwt);
+	List<NoteDTO> getAllArchieveImpl(String jwt);
 
-	public List<NoteDTO> getAllPinnedImpl(String jwt);
+	List<NoteDTO> getAllPinnedImpl(String jwt);
 
 	List<NoteDTO> getAllTrashNotesImpl(String jwt);
 
-	public void emptyTheBin(String jwt) throws NoteNotFoundException;
+	void emptyTheBin(String jwt) throws NoteNotFoundException;
 	
-	public NoteDTO[] sortedNotes(String jwt) ;
+	NoteDTO[] sortedNotes(String jwt) ;
 	
 
 

@@ -1,6 +1,6 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.io.IOException; 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,12 +39,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class NoteImplementation implements NoteService {
-	NoteRepository repository;
-	Utility utility;
+	private NoteRepository repository;
+	private Utility utility;
 	@Autowired
-	ElasticSearchService Eservice;
-	
-	int i=0;
+	private ElasticSearchService eservice;
+
+	int i = 0;
 
 	@Autowired
 	public NoteImplementation(NoteRepository repository, Utility utility) {
@@ -56,8 +56,8 @@ public class NoteImplementation implements NoteService {
 	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws JWTTokenException, Exception {
 
 		UserInfo user = utility.getUser(jwt);
-		List<Labels> labels = new ArrayList<Labels>();
-		List<Images> images = new ArrayList<Images>();
+		List<Labels> labels;
+		List<Images> images;
 		if (user != null) {
 			int notesid;
 			try {
@@ -75,10 +75,9 @@ public class NoteImplementation implements NoteService {
 				images = null;
 			Notes notes = new Notes(notedto.getTitle(), notedto.getTakeanote(), notedto.getReminder(),
 					notedto.getColor(), labels, images, user);
-			System.out.println(notes);
 			repository.save(notes);
 			notedto.setId(notesid);
-			Eservice.newNote(notedto);
+			eservice.newNote(notedto);
 			return true;
 
 		} else {
@@ -101,14 +100,14 @@ public class NoteImplementation implements NoteService {
 				repository.createLabel(dtolabels.get(i), user);
 			}
 		}
-		List<Labels> labels = dtolabels.stream().map(s -> repository.findLabelByName(s)).collect(Collectors.toList());
 
-		return labels;
+		return dtolabels.stream().map(s -> repository.findLabelByName(s)).collect(Collectors.toList());
+
 	}
 
 	public void deleteNoteImpl(int id, String jwt) throws JWTTokenException, NoteNotFoundException {
 		UserInfo user = utility.getUser(jwt);
-		Eservice.deleteNote(id);
+		eservice.deleteNote(id);
 		if (utility.validateToken(jwt) && user != null) {
 			if (repository.deleteByNoteid(id) == null)
 				throw new NoteNotFoundException("No Note available with this ID");
@@ -124,15 +123,15 @@ public class NoteImplementation implements NoteService {
 			Notes note = repository.getNotes(updatedto.getId());
 			if (note == null)
 				throw new NoteNotFoundException("Note not available for this id");
-			System.out.println(note);
 			Notes notes = utility.getUpdatedNote(updatedto, note, images, labels);
 			repository.save(notes);
 			NoteDTO notedt = new NoteDTO();
 			BeanUtils.copyProperties(updatedto, notedt);
-			Eservice.updateNote(notedt);
+			eservice.updateNote(notedt);
 			return true;
-		} else
+		} else {
 			throw new JWTTokenException("Problem with your Token");
+		}
 	}
 
 	public NoteDTO getNoteImpl(int id) {
@@ -146,63 +145,59 @@ public class NoteImplementation implements NoteService {
 
 		UserInfo user = utility.getUser(jwt);
 		List<Notes> allnotes = repository.getAllNotes(user.getId());
-		List<NoteDTO> allnotedto = allnotes.stream().map(s -> {
+
+		return allnotes.stream().map(s -> {
 			NoteDTO temp = new NoteDTO();
 			BeanUtils.copyProperties(s, temp);
 			return temp;
 		}).collect(Collectors.toList());
 
-		return allnotedto;
 	}
 
 	public List<NoteDTO> getAllArchieveImpl(String jwt) {
 		UserInfo user = utility.getUser(jwt);
 		List<Notes> allarchieve = repository.getAllArchieve(user.getId());
-		List<NoteDTO> allnotedtoarchieve = allarchieve.stream().map(s -> {
+
+		return allarchieve.stream().map(s -> {
 			NoteDTO temp = new NoteDTO();
 			BeanUtils.copyProperties(s, temp);
 			return temp;
 		}).collect(Collectors.toList());
 
-		return allnotedtoarchieve;
 	}
 
 	@Override
 	public List<NoteDTO> getAllPinnedImpl(String jwt) {
 		UserInfo user = utility.getUser(jwt);
 		List<Notes> allpinned = repository.getAllPinned(user);
-		List<NoteDTO> allnotedtoarchieve = allpinned.stream().map(s -> {
+		return allpinned.stream().map(s -> {
 			NoteDTO temp = new NoteDTO();
 			BeanUtils.copyProperties(s, temp);
 			return temp;
 		}).collect(Collectors.toList());
 
-		return allnotedtoarchieve;
 	}
 
 	@Override
 	public List<NoteDTO> getAllTrashNotesImpl(String jwt) {
 		UserInfo user = utility.getUser(jwt);
 		List<Notes> alltrash = repository.getAllTrash(user);
-		List<NoteDTO> alltrashdto = alltrash.stream().map(s -> {
+		return alltrash.stream().map(s -> {
 			NoteDTO temp = new NoteDTO();
 			BeanUtils.copyProperties(s, temp);
 			return temp;
 		}).collect(Collectors.toList());
 
-		return alltrashdto;
 	}
 
 	@Override
 	public void emptyTheBin(String jwt) throws NoteNotFoundException {
 		UserInfo user = utility.getUser(jwt);
-		if (repository.cleanBin(user.getId()) != 0) {
-			return;
-		} else
+		if (repository.cleanBin(user.getId()) == 0) {
 			throw new NoteNotFoundException("your bin is clean already");
+		}
 
 	}
-	
 
 	public NoteDTO[] sortedNotes(String jwt) {
 		UserInfo user = utility.getUser(jwt);
@@ -222,5 +217,4 @@ public class NoteImplementation implements NoteService {
 		return dtos;
 	}
 
-	
 }

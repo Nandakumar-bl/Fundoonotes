@@ -69,7 +69,7 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 	public ResponseEntity<ErrorResponse> labelFound(LabelAlreadyExsistException ex)
 	{
 		log.error(ex.getMessage());
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label Error",ex.getMessage()));
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label found",ex.getMessage()));
 	}
 	
 	@ExceptionHandler(LabelUpdatingException.class)
@@ -83,7 +83,7 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 	public ResponseEntity<ErrorResponse> updateLabel(LabelNotFoundException ex)
 	{
 		log.error(ex.getMessage());
-		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label Error",ex.getMessage()));
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Label not found",ex.getMessage()));
 	}
 	
 	
@@ -95,7 +95,7 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 	}
 	
 	@ExceptionHandler(EmailAlreadyExsist.class)
-	public ResponseEntity<ErrorResponse> EmailAlreadyExsist(EmailAlreadyExsist ex)
+	public ResponseEntity<ErrorResponse> emailAlreadyExsist(EmailAlreadyExsist ex)
 	{
 		log.error(ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Mail id Exception",ex.getMessage()));
@@ -103,20 +103,20 @@ public class ErrorExceptionHandler extends ResponseEntityExceptionHandler
 	
 	
 	@ExceptionHandler(CollaboratorNotFoundException.class)
-	public ResponseEntity<ErrorResponse> CollaboratorException(CollaboratorNotFoundException ex)
+	public ResponseEntity<ErrorResponse> collaboratorException(CollaboratorNotFoundException ex)
 	{
 		log.error(ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Mail id Exception",ex.getMessage()));
 	}
 	
 	@ExceptionHandler(FileFormatException.class)
-	public ResponseEntity<ErrorResponse> FileFormatException(FileFormatException ex)
+	public ResponseEntity<ErrorResponse> fileFormatException(FileFormatException ex)
 	{
 		log.error(ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Format Exception",ex.getMessage()));
 	}
 	@ExceptionHandler(NoProfileFoundException.class)
-	public ResponseEntity<ErrorResponse> NoProfileFoundException(NoProfileFoundException ex)
+	public ResponseEntity<ErrorResponse> noProfileFoundException(NoProfileFoundException ex)
 	{
 		log.error(ex.getMessage());
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(400,"Profile not found",ex.getMessage()));

@@ -1,18 +1,12 @@
 package com.bridgelabz.fundoonotes.dto;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.util.Date; 
 import java.util.List;
-
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document;
-
-import com.fasterxml.jackson.annotation.JsonView;
-
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor; 
 
-@Document(indexName = "fundoo",type = "notedto")
+//@Document(indexName = "fundoo",type = "notedto")
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteDTO
@@ -27,8 +21,19 @@ public class NoteDTO
 	private String reminder;
 	private List<String> labels;
 	private List<String> images;
-	private Date CreatedTime;
 	
+	
+	
+	public NoteDTO(String title, String takeanote, String color, String reminder, List<String> labels,
+			List<String> images) {
+		super();
+		this.title = title;
+		this.takeanote = takeanote;
+		this.color = color;
+		this.reminder = reminder;
+		this.labels = labels;
+		this.images = images;
+	}
 	
 	
 	
@@ -94,19 +99,8 @@ public class NoteDTO
 	public String toString() {
 		return "NoteDTO [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
 				+ ", ispinned=" + ispinned + ", color=" + color + ", reminder=" + reminder + ", labels=" + labels
-				+ ", images=" + images + ", date=" + CreatedTime + "]";
-	}
-	public Date getCreatedTime() {
-		return CreatedTime;
-	}
-	public void setCreatedTime(Date createdTime) {
-		CreatedTime = createdTime;
+				+ ", images=" + images + "]";
 	}
 	
-	
-	
-	
-	
-
 
 }
