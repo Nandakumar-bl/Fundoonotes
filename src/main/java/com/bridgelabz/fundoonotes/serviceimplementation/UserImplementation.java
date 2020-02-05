@@ -61,16 +61,17 @@ public class UserImplementation implements UserService, UserDetailsService {
 
 	public boolean Register(UserDTO userDto) throws UserException {
 
-		if (repository.findByUsername(utility.getUsernameFromToken(userDto.getUsername())) != null)
+		if (repository.findByUsername(userDto.getUsername()) != null)
 			throw new UserException("username already exsist");
 
 		try {
+			System.out.println("inside register");
 			UserInfo user = mapper.map(userDto, UserInfo.class);
-			System.out.println(user);
 			repository.SaveUser(user.getId(), user.getUsername(), user.getFirstname(), user.getLastname(),
 					user.getEmail(), bcrypt.encode(user.getPassword()));
-			rabbitTemplate.convertAndSend("exchanger", "key", user.getEmail());
+			//rabbitTemplate.convertAndSend("exchanger", "key", user.getEmail());
 			// kafkaTemplate.send("verification",user.getEmail());
+			System.out.println("after register");
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,5 +1,8 @@
 package com.bridgelabz.fundoonotes.configuration;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;    
 import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
@@ -45,9 +48,22 @@ public class Userconfiguration extends WebSecurityConfigurerAdapter
 			.authorizeRequests()
 			.antMatchers("/user/**")
 			.permitAll()
-			.anyRequest().permitAll()//.authenticated()
+			.anyRequest().authenticated()
 			.and().addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		http
+	    .exceptionHandling()
+	    .authenticationEntryPoint((request, response, e) -> 
+	    {
+	        response.setContentType("application/json;charset=UTF-8");
+	        response.setStatus(HttpServletResponse.SC_BAD_GATEWAY);
+	        response.getWriter().write((new JSONObject()
+	        		.put("Exception:","JWT Exception")
+	                .put("Error Message:", "Not a valid JWT")
+	                .put("Error code:",400)
+	                .toString()));
+	    });
 		
 	}
 

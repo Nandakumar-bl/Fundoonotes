@@ -33,9 +33,9 @@ public class Logger
 	  public Object commonMethod(ProceedingJoinPoint JointPoint) throws Throwable 
 	  {
 	  log.info("Before "+JointPoint.getSignature().getName()+" method of "+JointPoint.getSignature().getDeclaringType().getSimpleName());
-	  Object retu=  JointPoint.proceed();
+	  Object returner=  JointPoint.proceed();
 	  log.info("After "+JointPoint.getSignature().getName()+"  method of class"+JointPoint.getSignature().getDeclaringType().getSimpleName()); 
-	  return retu;
+	  return returner;
 	  }
 	  
 	 

@@ -1,7 +1,8 @@
 package com.bridgelabz.fundoonotes.model;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List; 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Notes {
+public class Notes implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
@@ -31,13 +32,11 @@ public class Notes {
 	@Column(columnDefinition = "boolean default false")
 	private boolean ispinned;
 	private String reminder;
-    private String color;
-    @LastModifiedDate
-    private Date lastupdate;
+	private String color;
+	@LastModifiedDate
+	private Date lastupdate;
 	@ManyToMany
 	private List<Labels> labels;
-	@OneToMany(mappedBy = "notes")
-	private List<Images> images;
 	@Column(columnDefinition = "timestamp default current_timestamp")
 	private Date CreatedTime;
 	@JsonIgnore
@@ -45,32 +44,28 @@ public class Notes {
 	private UserInfo userinfo;
 	@OneToMany(mappedBy = "notes")
 	private List<Collaborator> collaborators;
-	
-	
-	public Notes() {}
-	
 
-	public Notes(int id,String title, String takeanote,String reminder, String color, List<Labels> labels, List<Images> images) 
-	{
-		this.id=id;
-		this.title = title;
-		this.takeanote = takeanote;
-		this.reminder = reminder;
-		this.color = color;
-		this.labels = labels;
-		this.images = images;
-		
+	public Notes() {
 	}
-	
-	public Notes(String title, String takeanote,String reminder, String color, List<Labels> labels, List<Images> images,UserInfo userinfo) 
-	{
+
+	public Notes(int id, String title, String takeanote, String reminder, String color, List<Labels> labels) {
+		this.id = id;
 		this.title = title;
 		this.takeanote = takeanote;
 		this.reminder = reminder;
 		this.color = color;
 		this.labels = labels;
-		this.images = images;
-		this.userinfo=userinfo;
+
+	}
+
+	public Notes(String title, String takeanote, String reminder, String color, List<Labels> labels,
+			UserInfo userinfo) {
+		this.title = title;
+		this.takeanote = takeanote;
+		this.reminder = reminder;
+		this.color = color;
+		this.labels = labels;
+		this.userinfo = userinfo;
 	}
 
 	public int getId() {
@@ -97,9 +92,6 @@ public class Notes {
 		this.takeanote = takeanote;
 	}
 
-
-
-
 	public boolean isIsarchieve() {
 		return isarchieve;
 	}
@@ -124,7 +116,6 @@ public class Notes {
 		this.ispinned = ispinned;
 	}
 
-	
 	public String getReminder() {
 		return reminder;
 	}
@@ -141,57 +132,36 @@ public class Notes {
 		CreatedTime = createdTime;
 	}
 
-
-
-
 	public List<Labels> getLabels() {
 		return labels;
 	}
-
 
 	public void setLabels(List<Labels> labels) {
 		this.labels = labels;
 	}
 
-
 	public Date getLastupdate() {
 		return lastupdate;
 	}
-
 
 	public void setLastupdate(Date lastupdate) {
 		this.lastupdate = lastupdate;
 	}
 
-
 	public UserInfo getUserinfo() {
 		return userinfo;
 	}
-
 
 	public void setUserinfo(UserInfo userinfo) {
 		this.userinfo = userinfo;
 	}
 
-
-	
 	public List<Collaborator> getCollaborators() {
 		return collaborators;
 	}
 
-
 	public void setCollaborators(List<Collaborator> collaborators) {
 		this.collaborators = collaborators;
-	}
-
-
-	@JsonIgnore
-	public List<Images> getImages() {
-		return images;
-	}
-
-	public void setImages(List<Images> images) {
-		this.images = images;
 	}
 
 	public String getColor() {
@@ -202,22 +172,12 @@ public class Notes {
 		this.color = color;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "Notes [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
 				+ ", istrash=" + istrash + ", ispinned=" + ispinned + ", reminder=" + reminder + ", color=" + color
-				+ ", label=" + labels + ", images=" + images + ", CreatedTime=" + CreatedTime + ", userinfo=S]";
+				+ ", lastupdate=" + lastupdate + ", labels=" + labels + ", CreatedTime=" + CreatedTime + ", userinfo="
+				+ userinfo + ", collaborators=" + collaborators + "]";
 	}
 
-	
-
-
-
-	
-	
-	}
-
-
-	
-
+}

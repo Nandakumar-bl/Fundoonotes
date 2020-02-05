@@ -33,10 +33,9 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		String header = request.getHeader("jwt");
-
 		String username = null;
 		String jwt = null;
-
+		
 		if (header != null) {
 			jwt = header;
 			username = utility.getUsernameFromToken(jwt);
@@ -52,12 +51,11 @@ public class JwtFilter extends OncePerRequestFilter {
 					utility.getUser(header);
 				else
 					utility.cache(jwt);
-			} else {
-				throw new JWTTokenException("Token is not valid");
-			}
+			} 
 
 		}
+		
 		filterChain.doFilter(request, response);
-
+		
 	}
 }

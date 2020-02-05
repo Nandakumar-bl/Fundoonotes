@@ -1,11 +1,9 @@
 package com.bridgelabz.fundoonotes.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,75 +28,69 @@ import com.bridgelabz.fundoonotes.utility.Utility;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	@Autowired
+	
 	private UserService service;
-	@Autowired
 	private Utility utility;
 	
-	
+	@Autowired
+	public UserController(UserService service, Utility utility) {
+		super();
+		this.service = service;
+		this.utility = utility;
+	}
 
-	
 	@PostMapping("/register")
-	public ResponseEntity<Response> registration(@Valid @RequestBody UserDTO userdto, BindingResult bindingresult) throws UserException {
-	
-		if (bindingresult.hasErrors() || !userdto.getPassword().equals(userdto.getPasswordagain())) 
-		{
-		      	return ResponseEntity.badRequest().body(new Response(400,"Errors_found",utility.getErrors(bindingresult, userdto)));
-		} 
-		else 
-		{
-			if(service.Register(userdto))
-			return ResponseEntity.ok().body(new Response(200,"Registered Successfully",userdto));
+	public ResponseEntity<Response> registration(@Valid @RequestBody UserDTO userdto, BindingResult bindingresult)
+			throws UserException {
+
+		if (bindingresult.hasErrors() || !userdto.getPassword().equals(userdto.getPasswordagain())) {
+			return ResponseEntity.badRequest()
+					.body(new Response(400, "Errors_found", utility.getErrors(bindingresult, userdto)));
+		} else {
+
+			if (service.Register(userdto))
+				return ResponseEntity.ok().body(new Response(400, "Registered Successfully", userdto));
 			else
-			 return ResponseEntity.badRequest().body(new Response(400,"User already registered",userdto));
+				return ResponseEntity.badRequest().body(new Response(400, "User already registered", userdto));
 		}
 	}
+
 	@GetMapping("/verifyemail/{jwt}")
-	public ResponseEntity<Response> checkEmail(@PathVariable("jwt") String jwt) throws JWTTokenException
-	{
+	public ResponseEntity<Response> checkEmail(@PathVariable("jwt") String jwt) throws JWTTokenException {
 		service.verifyEmail(jwt);
-		return ResponseEntity.ok().body(new Response(400,"Email Verified",null));
-		
+		return ResponseEntity.ok().body(new Response(200, "Email Verified", null));
+
 	}
-	
+
 	@PostMapping("/login")
-	public ResponseEntity<Response> login(@RequestBody LoginDTO logindto) throws LoginException{
-		
-		
+	public ResponseEntity<Response> login(@RequestBody LoginDTO logindto) throws LoginException {
 		return service.login(logindto);
 	}
-	
+
 	@PostMapping("/forgotpassword")
-	public ResponseEntity<Response> forgotPassword(@RequestBody ForgotDTO forgotdto) throws MailIDNotFoundException
-	{
-		if(utility.checkmail(forgotdto.getEmail()))
-		{
-		service.forgotPassword(forgotdto);
-		return ResponseEntity.ok().body(new Response(400,"Mail sent to your id",forgotdto));
-		}
-		else
-		{
-			throw new MailIDNotFoundException("Not a valid mail id"); 
+	public ResponseEntity<Response> forgotPassword(@RequestBody ForgotDTO forgotdto) throws MailIDNotFoundException {
+		if (utility.checkmail(forgotdto.getEmail())) {
+			service.forgotPassword(forgotdto);
+			return ResponseEntity.ok().body(new Response(200, "Mail sent to your id", forgotdto));
+		} else {
+			throw new MailIDNotFoundException("Not a valid mail id");
 		}
 	}
-	
+
 	@PutMapping("/resetpassword/{jwt}")
-	public ResponseEntity<Response> newPassword(@RequestBody PasswordDTO password,@PathVariable("jwt") String jwt) throws JWTTokenException
-	{
-	
-		if(password.getNewpassword().equals(password.getConfirmnewpassword()))
-		{
-			String resetresult=service.resetPassword(password.getNewpassword(),jwt);
-			if(resetresult==null)
-			return ResponseEntity.ok().body(new Response(200,"password redefined",null));
+	public ResponseEntity<Response> newPassword(@RequestBody PasswordDTO password, @PathVariable("jwt") String jwt)
+			throws JWTTokenException {
+
+		if (password.getNewpassword().equals(password.getConfirmnewpassword())) {
+			String resetresult = service.resetPassword(password.getNewpassword(), jwt);
+			if (resetresult == null)
+				return ResponseEntity.ok().body(new Response(200, "password redefined", null));
 			else
-			return ResponseEntity.badRequest().body(new Response(400,"Token Expired",null));
+				return ResponseEntity.badRequest().body(new Response(400, "Token Expired", null));
+		} else {
+			return ResponseEntity.badRequest().body(new Response(400, "password Not Matching", null));
 		}
-		else
-		{
-			return ResponseEntity.badRequest().body(new Response(400,"password Not Matching",null));
-		}
-		
+
 	}
 
 }

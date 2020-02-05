@@ -1,40 +1,85 @@
 package com.bridgelabz.fundoonotes;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+ 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;  
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import com.bridgelabz.fundoonotes.dto.LoginDTO;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import com.bridgelabz.fundoonotes.controller.UserController;
 import com.bridgelabz.fundoonotes.dto.UserDTO;
-import com.bridgelabz.fundoonotes.exceptions.LoginException;
-import com.bridgelabz.fundoonotes.exceptions.UserException;
-import com.bridgelabz.fundoonotes.repository.UserRepository;
 import com.bridgelabz.fundoonotes.service.UserService;
-import com.bridgelabz.fundoonotes.serviceimplementation.UserImplementation;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 class UserServiceTesting {
 
 	static {
 		System.setProperty("es.set.netty.runtime.available.processors", "false");
 	}
+	
 
+	private MockMvc mockMvc;
+	
 	@Autowired
-	UserService userservice = new UserImplementation();
-
+	UserController control;
+	
+	@Autowired
+	ObjectMapper mapper;
+		
+	@BeforeEach
+	public void init()
+	{
+		mockMvc=MockMvcBuilders.standaloneSetup(control).build();
+	}
+	
+	
 	@Test
-	public void testsave() throws UserException {
-		assertEquals(true,
-				userservice.Register(new UserDTO("naveen", "naveen", "kumar", "naveenkumar@gmail.com", "13213233")));
+	public void registerTester() throws Exception
+	{
+	
+		String register="{\n" + 
+				"	\"username\":\"nandhuPa\",\n" + 
+				"	\"email\":\"nandhukavi100@gmail.com\",\n" + 
+				"	\"firstname\":\"nandhu\",\n" + 
+				"	\"lastname\":\"kumar\",\n" + 
+				"	\"password\":\"nandhukavi\",\n" + 
+				"	\"passwordagain\":\"nandhukavi\"\n" + 
+				"}";
+	
+		HttpHeaders headers=new HttpHeaders();
+		
+		mockMvc.perform(post("/user/register")
+				.header("jwt","jvjv")
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(register))
+				.andExpect(status().isOk());
+	}
+	
+	
+	@Test
+	public void loginTest() throws Exception
+	{
+		String log="{\n" + 
+				"\n" + 
+				"\"username\":\"nandhukavi\",\n" + 
+				"\"password\":\"nandhukavi\"\n" + 
+				"}"; 
+		mockMvc.perform(post("/user/login")
+				.contentType(MediaType.APPLICATION_JSON_VALUE)
+				.content(log))
+				.andExpect(status().isOk());
 	}
 
-	@Test
-	public void testLogin() throws LoginException {
-		assertEquals(200, userservice.login(new LoginDTO("nandhukavi", "nandhukavi")).getStatusCodeValue());
-	}
+
 }

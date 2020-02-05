@@ -18,7 +18,7 @@ public interface NoteService {
 
 	void deleteNoteImpl(int id,String jwt) throws JWTTokenException, NoteNotFoundException;
 	
-	boolean updateNoteImpl(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException, JsonProcessingException, Exception;
+	NoteDTO updateNoteImpl(UpdateNoteDTO updatedto,String jwt)throws NoteNotFoundException,JWTTokenException, JsonProcessingException, Exception;
 	
 	NoteDTO getNoteImpl(int id) throws NoteNotFoundException;
 
@@ -29,6 +29,8 @@ public interface NoteService {
 	List<NoteDTO> getAllPinnedImpl(String jwt);
 
 	List<NoteDTO> getAllTrashNotesImpl(String jwt);
+	
+	public boolean restoreNoteImpl(int id);
 
 	void emptyTheBin(String jwt) throws NoteNotFoundException;
 	

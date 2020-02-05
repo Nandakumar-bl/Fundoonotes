@@ -1,15 +1,18 @@
 package com.bridgelabz.fundoonotes.dto;
 
+import java.io.Serializable; 
 import java.util.Date; 
 import java.util.List;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor; 
 
-//@Document(indexName = "fundoo",type = "notedto")
+@Document(indexName = "fundoo",type = "notedto")
 @AllArgsConstructor
 @NoArgsConstructor
-public class NoteDTO
+public class NoteDTO implements Serializable
 {
 	@Id
 	private int id;
@@ -21,12 +24,14 @@ public class NoteDTO
 	private String reminder;
 	private List<String> labels;
 	private List<String> images;
+	private Date CreatedTime;
 	
 	
 	
-	public NoteDTO(String title, String takeanote, String color, String reminder, List<String> labels,
+	public NoteDTO(int id,String title, String takeanote, String color, String reminder, List<String> labels,
 			List<String> images) {
 		super();
+		this.id=id;
 		this.title = title;
 		this.takeanote = takeanote;
 		this.color = color;
@@ -34,8 +39,6 @@ public class NoteDTO
 		this.labels = labels;
 		this.images = images;
 	}
-	
-	
 	
 	
 	public int getId() {
@@ -94,13 +97,20 @@ public class NoteDTO
 	public void setImages(List<String> images) {
 		this.images = images;
 	}
+	
+	public Date getCreatedTime() {
+		return CreatedTime;
+	}
 
+	public void setCreatedTime(Date createdTime) {
+		CreatedTime = createdTime;
+	}
+	
 	@Override
 	public String toString() {
 		return "NoteDTO [id=" + id + ", title=" + title + ", takeanote=" + takeanote + ", isarchieve=" + isarchieve
 				+ ", ispinned=" + ispinned + ", color=" + color + ", reminder=" + reminder + ", labels=" + labels
 				+ ", images=" + images + "]";
 	}
-	
 
 }

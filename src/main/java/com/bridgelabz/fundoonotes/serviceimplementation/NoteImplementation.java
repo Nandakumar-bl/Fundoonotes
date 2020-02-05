@@ -1,29 +1,17 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Arrays; 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.elasticsearch.action.delete.DeleteRequest;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.common.util.concurrent.EsExecutors;
-import org.elasticsearch.search.SearchHits;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
-
-import com.bridgelabz.fundoonotes.configuration.ElasticSearchConfig;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
-import com.bridgelabz.fundoonotes.model.Images;
 import com.bridgelabz.fundoonotes.model.Labels;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
@@ -31,11 +19,9 @@ import com.bridgelabz.fundoonotes.repository.NoteRepository;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.bridgelabz.fundoonotes.service.ElasticSearchService;
 import com.bridgelabz.fundoonotes.service.NoteService;
-import com.bridgelabz.fundoonotes.utility.SortbyID;
 import com.bridgelabz.fundoonotes.utility.Utility;
 import com.bridgelabz.fundoonotes.utility.sortbyDate;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class NoteImplementation implements NoteService {
@@ -43,6 +29,8 @@ public class NoteImplementation implements NoteService {
 	private Utility utility;
 	@Autowired
 	private ElasticSearchService eservice;
+	@Autowired
+	ModelMapper mapper;
 
 	int i = 0;
 
@@ -53,11 +41,10 @@ public class NoteImplementation implements NoteService {
 
 	}
 
-	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws JWTTokenException, Exception {
+	public boolean saveNewNoteImpl(NoteDTO notedto, String jwt) throws Exception {
 
 		UserInfo user = utility.getUser(jwt);
 		List<Labels> labels;
-		List<Images> images;
 		if (user != null) {
 			int notesid;
 			try {
@@ -69,12 +56,8 @@ public class NoteImplementation implements NoteService {
 				labels = getLabelsImpl(notedto.getLabels(), jwt);
 			else
 				labels = null;
-			if (notedto.getImages() != null)
-				images = getImagesImpl(notedto.getImages(), notesid);
-			else
-				images = null;
 			Notes notes = new Notes(notedto.getTitle(), notedto.getTakeanote(), notedto.getReminder(),
-					notedto.getColor(), labels, images, user);
+					notedto.getColor(), labels, user);
 			repository.save(notes);
 			notedto.setId(notesid);
 			eservice.newNote(notedto);
@@ -85,12 +68,6 @@ public class NoteImplementation implements NoteService {
 		}
 	}
 
-	public List<Images> getImagesImpl(List<String> dtoimages, int notesid) {
-
-		dtoimages.stream().map(s -> repository.createImages(s, notesid));
-		List<Images> images = repository.getImages(notesid);
-		return images;
-	}
 
 	public List<Labels> getLabelsImpl(List<String> dtolabels, String jwt) {
 		int size = dtolabels.size();
@@ -105,45 +82,49 @@ public class NoteImplementation implements NoteService {
 
 	}
 
-	public void deleteNoteImpl(int id, String jwt) throws JWTTokenException, NoteNotFoundException {
+	@CacheEvict(value = "mynotedelete",key="#noteid")
+	public void deleteNoteImpl(int noteid, String jwt) throws JWTTokenException, NoteNotFoundException {
 		UserInfo user = utility.getUser(jwt);
-		eservice.deleteNote(id);
+		eservice.deleteNote(noteid);
 		if (utility.validateToken(jwt) && user != null) {
-			if (repository.deleteByNoteid(id) == null)
+			if (repository.deleteByNoteid(noteid) == null)
 				throw new NoteNotFoundException("No Note available with this ID");
 		} else {
 			throw new JWTTokenException("Your Token is Not valid");
 		}
 	}
 
-	public boolean updateNoteImpl(UpdateNoteDTO updatedto, String jwt) throws JsonProcessingException, Exception {
+	
+	public NoteDTO updateNoteImpl(UpdateNoteDTO updatedto, String jwt) throws JsonProcessingException, Exception {
+		int noteid=updatedto.getId();
 		if (utility.validateToken(jwt)) {
 			List<Labels> labels = getLabelsImpl(updatedto.getLabels(), jwt);
-			List<Images> images = getImagesImpl(updatedto.getImages(), updatedto.getId());
 			Notes note = repository.getNotes(updatedto.getId());
 			if (note == null)
 				throw new NoteNotFoundException("Note not available for this id");
-			Notes notes = utility.getUpdatedNote(updatedto, note, images, labels);
+			Notes notes = utility.getUpdatedNote(updatedto, note, labels);
 			repository.save(notes);
 			NoteDTO notedt = new NoteDTO();
 			BeanUtils.copyProperties(updatedto, notedt);
 			eservice.updateNote(notedt);
-			return true;
+			return notedt;
 		} else {
 			throw new JWTTokenException("Problem with your Token");
 		}
 	}
 
-	public NoteDTO getNoteImpl(int id) {
-		NoteDTO notes = new NoteDTO();
-		Notes note = repository.getNotes(id);
-		BeanUtils.copyProperties(note, notes);
+	
+	
+	public NoteDTO getNoteImpl(int noteid) {
+		Notes note = repository.getNotes(noteid);
+		NoteDTO notes = mapper.map(note,NoteDTO.class);
 		return notes;
 	}
 
-	public List<NoteDTO> getAllNoteImpl(String jwt) {
+	
+	public List<NoteDTO> getAllNoteImpl(String jwtallnotes) {
 
-		UserInfo user = utility.getUser(jwt);
+		UserInfo user = utility.getUser(jwtallnotes);
 		List<Notes> allnotes = repository.getAllNotes(user.getId());
 
 		return allnotes.stream().map(s -> {
@@ -198,6 +179,14 @@ public class NoteImplementation implements NoteService {
 		}
 
 	}
+	
+	public boolean restoreNoteImpl(int id)
+	{
+		if(repository.restorenotebyId(id)!=null)
+			return true;
+		else
+			return false;
+	}
 
 	public NoteDTO[] sortedNotes(String jwt) {
 		UserInfo user = utility.getUser(jwt);
@@ -213,7 +202,7 @@ public class NoteImplementation implements NoteService {
 			dtos[i] = s;
 			i++;
 		});
-		Arrays.sort(dtos, new SortbyID());
+		Arrays.sort(dtos, new sortbyDate());
 		return dtos;
 	}
 

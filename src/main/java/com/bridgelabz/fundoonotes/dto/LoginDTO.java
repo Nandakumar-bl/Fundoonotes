@@ -23,8 +23,9 @@ public class LoginDTO {
 		this.password = password;
 	}
 	
-	
 
+	public LoginDTO() {
+	}
 	@Override
 	public String toString() {
 		return username;

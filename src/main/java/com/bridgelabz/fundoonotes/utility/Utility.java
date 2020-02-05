@@ -1,39 +1,30 @@
 package com.bridgelabz.fundoonotes.utility;
 
-import java.util.ArrayList; 
+import java.util.ArrayList;  
 import java.util.Date; 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-
-import com.bridgelabz.fundoonotes.dto.LoginDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
 import com.bridgelabz.fundoonotes.dto.UserDTO;
-import com.bridgelabz.fundoonotes.model.Images;
 import com.bridgelabz.fundoonotes.model.Labels;
 import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.model.UserInfo;
 import com.bridgelabz.fundoonotes.repository.UserRepository;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import net.bytebuddy.implementation.bind.MethodDelegationBinder.BindingResolver;
 
 @Component
 public class Utility {
@@ -92,8 +83,6 @@ public class Utility {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
-		System.out.println(username);
-		System.out.println(userDetails.getUsername());
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 	public Boolean validateToken(String token) {
@@ -106,7 +95,6 @@ public class Utility {
 		mailMessage.setSubject(subject);
 		mailMessage.setText(message);
 		mailMessage.setFrom("Nandhukavi100@gmail.com");
-		System.out.println(mailMessage);
 		javaMailSender.send(mailMessage);
 	}
 	
@@ -114,7 +102,7 @@ public class Utility {
 	{
 		UserInfo user=userRepository.findByEmail(email);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
-		String url="http://localhost:8082/user/resetpassword/"+jwt;
+		String url="http://localhost:8080/user/resetpassword/"+jwt;
 		sendMail(email,"changing password",url);
 	}
 	
@@ -133,7 +121,7 @@ public class Utility {
 	{
 		UserInfo user=userRepository.findByEmail(email);
 		String jwt=generateToken(new User(user.getUsername(),user.getPassword(),new ArrayList<>()));
-		String url="http://localhost:8083/user/verifyemail/"+jwt;
+		String url="http://localhost:8080/user/verifyemail/"+jwt;
 		sendMail(email,"verifying email",url);
 	}
 	public boolean checkJWT(String token)
@@ -145,7 +133,7 @@ public class Utility {
 		return userRepository.findByEmail(email)!=null;
 	}
 	
-	public Notes getUpdatedNote(UpdateNoteDTO updatedto,Notes note,List<Images> images,List<Labels> labels)
+	public Notes getUpdatedNote(UpdateNoteDTO updatedto,Notes note,List<Labels> labels)
 	{
 		
 		note.setIsarchieve(updatedto.isIsarchieve());
@@ -154,7 +142,6 @@ public class Utility {
 		note.setColor(updatedto.getColor());
 		note.setTitle(updatedto.getTitle());
 		note.setTakeanote(updatedto.getTakeanote());
-		note.setImages(images);
 		note.setLabels(labels);
 		note.setReminder(updatedto.getReminder());
 		
@@ -165,7 +152,6 @@ public class Utility {
 	@Cacheable(value = "mycache",key="#jwt")
 	public UserInfo getUser(String jwt)
 	{
-		System.out.println("inside cache");
 		UserInfo user=userRepository.findByUsername(getUsernameFromToken(jwt));
 		return user;
 	}

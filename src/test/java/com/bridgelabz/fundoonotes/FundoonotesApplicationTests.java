@@ -17,18 +17,4 @@ class FundoonotesApplicationTests {
 		System.setProperty("es.set.netty.runtime.available.processors", "false");
 	}
 
-	@Autowired
-	UserService userservice;
-
-	@Test
-	public void testsave() throws UserException {
-		assertEquals(true,
-				userservice.Register(new UserDTO("naveen", "naveen", "kumar", "naveenkumar@gmail.com", "13213233")));
-	}
-
-	@Test
-	public void testLogin() throws LoginException {
-		assertEquals(200, userservice.login(new LoginDTO("nandhukavi", "nandhukavi")).getStatusCodeValue());
-	}
-
 }

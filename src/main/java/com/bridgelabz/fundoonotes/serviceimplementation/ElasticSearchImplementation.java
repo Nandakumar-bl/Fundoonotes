@@ -101,9 +101,9 @@ public class ElasticSearchImplementation implements ElasticSearchService
 		String search = ".*" + text + ".*";
 		SearchRequest searchRequest = new SearchRequest();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.query(QueryBuilders.regexpQuery("title",search));
+		searchSourceBuilder.query(QueryBuilders.regexpQuery("takeanote",search));
 		searchRequest.source(searchSourceBuilder);
-		SearchResponse searchResponse = client.search(searchRequest);
+		SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
 		SearchHits object = searchResponse.getHits();
 		List<NoteDTO> notesall = new ArrayList();
 		object.forEach(s -> {
