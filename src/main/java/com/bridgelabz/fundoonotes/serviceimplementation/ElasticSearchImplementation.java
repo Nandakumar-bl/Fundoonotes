@@ -87,7 +87,7 @@ public class ElasticSearchImplementation implements ElasticSearchService
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		searchSourceBuilder.query(QueryBuilders.matchAllQuery());
 		searchRequest.source(searchSourceBuilder);
-		SearchResponse searchResponse = client.search(searchRequest);
+		SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
 		SearchHits object = searchResponse.getHits();
 		List<NoteDTO> notesall = new ArrayList();
 		object.forEach(s -> {
@@ -101,7 +101,7 @@ public class ElasticSearchImplementation implements ElasticSearchService
 		String search = ".*" + text + ".*";
 		SearchRequest searchRequest = new SearchRequest();
 		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-		searchSourceBuilder.query(QueryBuilders.regexpQuery("takeanote",search));
+		searchSourceBuilder.query(QueryBuilders.regexpQuery("title",search));
 		searchRequest.source(searchSourceBuilder);
 		SearchResponse searchResponse = client.search(searchRequest,RequestOptions.DEFAULT);
 		SearchHits object = searchResponse.getHits();
@@ -111,10 +111,5 @@ public class ElasticSearchImplementation implements ElasticSearchService
 			notesall.add(temp);
 		});
 		return notesall;
-
 	}
-
-
-	
-
 }

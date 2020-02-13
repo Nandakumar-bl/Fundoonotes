@@ -1,12 +1,15 @@
 package com.bridgelabz.fundoonotes.serviceimplementation;
 
-import java.util.Arrays; 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
@@ -68,7 +71,6 @@ public class NoteImplementation implements NoteService {
 		}
 	}
 
-
 	public List<Labels> getLabelsImpl(List<String> dtolabels, String jwt) {
 		int size = dtolabels.size();
 		UserInfo user = utility.getUser(jwt);
@@ -82,7 +84,7 @@ public class NoteImplementation implements NoteService {
 
 	}
 
-	@CacheEvict(value = "mynotedelete",key="#noteid")
+	@CacheEvict(value = "mynotedelete", key = "#noteid")
 	public void deleteNoteImpl(int noteid, String jwt) throws JWTTokenException, NoteNotFoundException {
 		UserInfo user = utility.getUser(jwt);
 		eservice.deleteNote(noteid);
@@ -94,9 +96,8 @@ public class NoteImplementation implements NoteService {
 		}
 	}
 
-	
 	public NoteDTO updateNoteImpl(UpdateNoteDTO updatedto, String jwt) throws JsonProcessingException, Exception {
-		int noteid=updatedto.getId();
+		int noteid = updatedto.getId();
 		if (utility.validateToken(jwt)) {
 			List<Labels> labels = getLabelsImpl(updatedto.getLabels(), jwt);
 			Notes note = repository.getNotes(updatedto.getId());
@@ -113,21 +114,22 @@ public class NoteImplementation implements NoteService {
 		}
 	}
 
-	
-	
 	public NoteDTO getNoteImpl(int noteid) {
 		Notes note = repository.getNotes(noteid);
-		NoteDTO notes = mapper.map(note,NoteDTO.class);
-		return notes;
+
+		return mapper.map(note, NoteDTO.class);
+
 	}
 
-	
-	public List<NoteDTO> getAllNoteImpl(String jwtallnotes) {
+	public List<NoteDTO> getAllNoteImpl(String jwtAllNotes, int pageNo) {
 
-		UserInfo user = utility.getUser(jwtallnotes);
-		List<Notes> allnotes = repository.getAllNotes(user.getId());
+		UserInfo user = utility.getUser(jwtAllNotes);
 
-		return allnotes.stream().map(s -> {
+		Pageable pagednote = PageRequest.of(pageNo, 10);
+
+		Page<Notes> pagenotes = repository.findAllByuserinfo(user, pagednote);
+
+		return pagenotes.getContent().stream().map(s -> {
 			NoteDTO temp = new NoteDTO();
 			BeanUtils.copyProperties(s, temp);
 			return temp;
@@ -179,10 +181,9 @@ public class NoteImplementation implements NoteService {
 		}
 
 	}
-	
-	public boolean restoreNoteImpl(int id)
-	{
-		if(repository.restorenotebyId(id)!=null)
+
+	public boolean restoreNoteImpl(int id) {
+		if (repository.restorenotebyId(id) != null)
 			return true;
 		else
 			return false;

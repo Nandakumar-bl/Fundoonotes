@@ -2,9 +2,13 @@ package com.bridgelabz.fundoonotes.repository;
 
 import java.util.List; 
 import javax.transaction.Transactional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import com.bridgelabz.fundoonotes.model.Labels;
 import com.bridgelabz.fundoonotes.model.Notes;
@@ -13,7 +17,7 @@ import com.bridgelabz.fundoonotes.model.UserInfo;
 
 @Repository
 @Transactional
-public interface NoteRepository extends JpaRepository<Notes,Integer> 
+public interface NoteRepository extends JpaRepository<Notes,Integer>,PagingAndSortingRepository<Notes, Integer>
 {
 	
 	@Query("from UserInfo where username=?1")
@@ -31,6 +35,8 @@ public interface NoteRepository extends JpaRepository<Notes,Integer>
 	@Query(value = "insert into labels(label,userinfo_id) values(:newlabel,:user)", nativeQuery = true)
 	@Modifying
 	Integer createLabel(String newlabel,UserInfo user);
+	
+	Page<Notes> findAllByuserinfo(UserInfo user,Pageable pageable);
 	
 	@Query("from Notes where id=?1")
 	Notes getNotes(int id);

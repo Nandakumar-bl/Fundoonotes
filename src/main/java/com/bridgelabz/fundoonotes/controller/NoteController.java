@@ -72,9 +72,9 @@ public class NoteController {
 			throw new NoteNotFoundException("Note Not available for this id");
 	}
 
-	@GetMapping("/all")
-	public ResponseEntity<Response> getAllNote(@RequestHeader("jwt") String jwt) throws NoteNotFoundException {
-		List<NoteDTO> notes = noteservice.getAllNoteImpl(jwt);
+	@GetMapping("/all/{pageno}")
+	public ResponseEntity<Response> getAllNote(@PathVariable("pageno") int pageNo,@RequestHeader("jwt") String jwt) throws NoteNotFoundException {
+		List<NoteDTO> notes = noteservice.getAllNoteImpl(jwt,pageNo);
 		if (notes != null)
 			return ResponseEntity.ok().body(new Response(200, "Your note fetched", notes));
 		else

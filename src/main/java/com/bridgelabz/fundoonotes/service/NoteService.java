@@ -1,17 +1,13 @@
 package com.bridgelabz.fundoonotes.service;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
-
 import com.bridgelabz.fundoonotes.dto.NoteDTO;
 import com.bridgelabz.fundoonotes.dto.UpdateNoteDTO;
 import com.bridgelabz.fundoonotes.exceptions.NoteNotFoundException;
 import com.bridgelabz.fundoonotes.exceptions.UserException;
-import com.bridgelabz.fundoonotes.model.Notes;
 import com.bridgelabz.fundoonotes.response.JWTTokenException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
+   
 public interface NoteService {
 	
 	boolean saveNewNoteImpl(NoteDTO notedto,String jwt) throws JWTTokenException, UserException, Exception;
@@ -22,7 +18,7 @@ public interface NoteService {
 	
 	NoteDTO getNoteImpl(int id) throws NoteNotFoundException;
 
-	List<NoteDTO> getAllNoteImpl(String jwt);
+	List<NoteDTO> getAllNoteImpl(String jwt,int pageNo);
 	
 	List<NoteDTO> getAllArchieveImpl(String jwt);
 
@@ -30,7 +26,7 @@ public interface NoteService {
 
 	List<NoteDTO> getAllTrashNotesImpl(String jwt);
 	
-	public boolean restoreNoteImpl(int id);
+	boolean restoreNoteImpl(int id);
 
 	void emptyTheBin(String jwt) throws NoteNotFoundException;
 	
